@@ -1,4 +1,8 @@
-#include <stdio.h>
+#ifndef GAME_ENGINE_HPP
+#define GAME_ENGINE_HPP
+
+#include <cstdio>
+#include "TurnState.hpp"
 
 namespace game {
   enum CardType {
@@ -37,9 +41,13 @@ namespace game {
 
       Card* DrawCards();
 
+      void AddCards(Card* cards, size_t amount);
+
+      void ResetDiscardPile();
+
     private:
-      Card* drawPile;
-      Card* discardPile;
+      Card* mDrawPile;
+      Card* mDiscardPile;
   };
 
   class Player {
@@ -53,12 +61,12 @@ namespace game {
       void RemoveCard(Card card);
 
     private:
-      Card* cards;
+      Card* mCards;
   };
 
   class DrawCore {
     public:
-      DrawCore(unsigned int seed);
+      DrawCore(unsigned int seed, size_t playerCount);
 
       void PlayCard(Card card);
 
@@ -66,13 +74,15 @@ namespace game {
 
     private:
 
-      void GenerateGame(size_t playerCount);
+      void GenerateGame();
 
-      unsigned int seed;
-      unsigned int turn;
-      Deck* deck;
-      Player players[];
+      unsigned int mSeed;
+      turn::TurnState mPlayerTurn;
+      Deck* mDeck;
+      Player mPlayers[];
   };
 
 };
+
+#endif
 
