@@ -25,11 +25,7 @@ if(BUILD_TESTS)
   add_subdirectory(tests)
 endif()
 
-target_sources(DrawEngine
-  PRIVATE
-    src/DrawEngine.cpp
-    src/TurnState.cpp
-)
+add_subdirectory(src)
 
 target_include_directories(DrawEngine
   PUBLIC
