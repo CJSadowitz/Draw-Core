@@ -1,7 +1,7 @@
-cmake_minimum_required(VERSION 3.23)
+cmake_minimum_required(VERSION 3.22)
 
 project(DrawEngine)
-add_library(DrawEngine)
+add_library(DrawEngine STATIC ${SOURCE_FILES})
 include(GNUInstallDirs)
 
 # User provided build options
@@ -11,7 +11,7 @@ option(INSTALL_THIRD_PARTY_LIBS "Install third party libs" OFF)
 # Run the cmake file inside of the third_party directory
 if(INSTALL_THIRD_PARTY_LIBS)
   add_subdirectory(third_party)
-endif
+endif()
 
 # Attach the built unittesting library and generate test cases
 if(DRAWENGINE_BUILD_TESTS)
@@ -22,29 +22,19 @@ endif()
 # Recursively do this?
 target_sources(DrawEngine
   PRIVATE
-    src/DrawEngine.cxx
-    src/TurnState.cxx
-
-  PUBLIC
-    FILE_SET HEADERS
-    BASE_DIRS
-      include
-    FILES
-      include/DrawEngine.hpp
-      include/TurnState.hpp
-  )
+    src/DrawEngine.cpp
+    src/TurnState.cpp
+)
 
 target_include_directories(DrawEngine
   PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
     $<INSTALL_INTERFACE:include>
-  )
-
-install(TARGETS DrawEngine
-    FILE_SET HEADERS
-    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}   # .so
-    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}   # .a
-    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}   # .dll/.exe
 )
 
+install(FILES
+  include/DrawEngine.cpp
+  include/TurnState.cpp
+  DESTINATION include
+)
 
