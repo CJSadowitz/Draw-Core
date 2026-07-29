@@ -1,41 +1,12 @@
-#ifndef GAME_ENGINE_HPP
-#define GAME_ENGINE_HPP
+#ifndef DECK_HPP
+#define DECK_HPP
 
-#include "TurnState.hpp"
-#include <cstdio>
+#include <cstdlib>
+#include <cstring>
 #include <random>
+#include "Card.hpp"
 
 namespace game {
-  enum CardType {
-    RED,
-    GREEN,
-    BLUE,
-    YELLOW,
-    WILD
-  };
-
-  enum CardValue {
-    ONE,
-    TWO,
-    THREE,
-    FOUR,
-    FIVE,
-    SIX,
-    SEVEN,
-    EIGHT,
-    NINE,
-    SKIP,
-    PLUS_TWO,
-    REVERSE,
-    CHANGE_COLOR,
-    CHANGE_COLOR_PLUS_FOUR
-  };
-
-  struct Card {
-    CardType type;
-    CardValue value;
-  };
-
   class Deck {
     public:
       /**
@@ -87,40 +58,6 @@ namespace game {
       unsigned int mDiscardPileSize;
       std::mt19937 mSeed;
   };
-
-  class Player {
-    public:
-      Player(Card* cards, size_t size);
-
-      Card* GetCards(CardType type);
-
-      void AddCard(Card card);
-
-      void RemoveCard(Card card);
-
-    private:
-      Card* mCards;
-  };
-
-  class DrawCore {
-    public:
-      DrawCore(unsigned int seed, size_t playerCount);
-
-      void PlayCard(Card card);
-
-      unsigned int GetPlayerTurn();
-
-    private:
-
-      void GenerateGame();
-
-      unsigned int mSeed;
-      turn::TurnState mPlayerTurn;
-      Deck* mDeck;
-      Player mPlayers[];
-  };
-
 };
 
 #endif
-
