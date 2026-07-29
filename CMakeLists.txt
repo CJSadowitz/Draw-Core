@@ -5,16 +5,23 @@ add_library(DrawEngine STATIC)
 include(GNUInstallDirs)
 
 # User provided build options
-option(DRAWENGINE_BUILD_TESTS "Build tests" OFF)
-option(INSTALL_THIRD_PARTY_LIBS "Install third party libs" OFF)
+option(BUILD_TESTS "Build tests" OFF)
 
 # Run the cmake file inside of the third_party directory
-if(INSTALL_THIRD_PARTY_LIBS)
-  add_subdirectory(third_party)
-endif()
+Include(FetchContent)
+
+set(FETCHCONTENT_BASE_DIR "${CMAKE_SOURCE_DIR}/third_party")
+
+FetchContent_Declare(
+  Catch2
+  GIT_REPOSITORY https://github.com/catchorg/Catch2.git
+  GIT_TAG        v3.8.1 # or a later release
+)
+
+FetchContent_MakeAvailable(Catch2)
 
 # Attach the built unittesting library and generate test cases
-if(DRAWENGINE_BUILD_TESTS)
+if(BUILD_TESTS)
   add_subdirectory(tests)
 endif()
 
