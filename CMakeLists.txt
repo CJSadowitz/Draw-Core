@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.22)
 
 project(DrawEngine)
-add_library(DrawEngine STATIC ${SOURCE_FILES})
+add_library(DrawEngine STATIC)
 include(GNUInstallDirs)
 
 # User provided build options
@@ -15,11 +15,9 @@ endif()
 
 # Attach the built unittesting library and generate test cases
 if(DRAWENGINE_BUILD_TESTS)
-  find_package(Catch2 CONFIG REQUIRED)
   add_subdirectory(tests)
 endif()
 
-# Recursively do this?
 target_sources(DrawEngine
   PRIVATE
     src/DrawEngine.cpp
@@ -30,11 +28,5 @@ target_include_directories(DrawEngine
   PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
     $<INSTALL_INTERFACE:include>
-)
-
-install(FILES
-  include/DrawEngine.cpp
-  include/TurnState.cpp
-  DESTINATION include
 )
 
