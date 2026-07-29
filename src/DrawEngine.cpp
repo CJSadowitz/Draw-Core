@@ -8,18 +8,19 @@ namespace game {
     this->mSeed.seed(seed);
 
     this->mDrawPile = (Card*) std::malloc(size * sizeof(Card));
-    std::memcpy(this->mDrawPile, cards, size);
+    std::memcpy(this->mDrawPile, cards, size * sizeof(Card));
+    
     this->mDrawPileSize = size;
   }
 
   Deck::~Deck() {
-    free(this->mDrawPile);
-    free(this->mDiscardPile);
+    if (this->mDrawPile) { free(this->mDrawPile); }
+    if (this->mDiscardPile) { free(this->mDiscardPile); }
   }
 
   void Deck::ShuffleCards() {
     Card* drawPile = (Card*) std::malloc(this->mDrawPileSize * sizeof(Card));
-    std::memcpy(drawPile, this->mDrawPile, this->mDrawPileSize);
+    std::memcpy(drawPile, this->mDrawPile, this->mDrawPileSize * sizeof(Card));
     Card* shuffledCards = (Card*) std::malloc(this->mDrawPileSize * sizeof(Card));
     if (shuffledCards == nullptr) {
       // Think about logging and exiting...
@@ -27,8 +28,8 @@ namespace game {
     }
 
     unsigned int remainingCards = this->mDrawPileSize;
-    for (int i = 0; i < remainingCards; i++) {
-      std::uniform_int_distribution<int> distr(0, i);
+    for (int i = 0; i < this->mDrawPileSize; i++) {
+      std::uniform_int_distribution<int> distr(0, remainingCards - 1);
       int index = distr(this->mSeed);
       shuffledCards[i] = drawPile[index];
       for (int j = index; j < remainingCards - 1; j++) {
@@ -36,8 +37,7 @@ namespace game {
       }
       remainingCards--;
     }
-
-    std::memcpy(this->mDrawPile, shuffledCards, this->mDrawPileSize);
+    std::memcpy(this->mDrawPile, shuffledCards, this->mDrawPileSize * sizeof(Card));
     free(shuffledCards);
     free(drawPile);
   }

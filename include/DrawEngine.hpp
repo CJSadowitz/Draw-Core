@@ -64,9 +64,25 @@ namespace game {
 
       void ResetDiscardPile();
 
+      Card* GetDrawPile() {
+        return this->mDrawPile;
+      }
+
+      unsigned int GetDrawPileSize() {
+        return this->mDrawPileSize;
+      }
+
+      Card* GetDiscardPile() {
+        return this->mDiscardPile;
+      }
+
+      unsigned int GetDiscardPileSize() {
+        return this->mDiscardPileSize;
+      }
+
     private:
-      Card* mDrawPile;
-      Card* mDiscardPile;
+      Card* mDrawPile = nullptr;
+      Card* mDiscardPile = nullptr;
       unsigned int mDrawPileSize;
       unsigned int mDiscardPileSize;
       std::mt19937 mSeed;
