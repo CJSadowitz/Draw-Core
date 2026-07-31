@@ -1,17 +1,6 @@
-CMake cmds
-```bash
-cmake ..
-cmake --build .
-cmake --install . --prefix ../install
-cmake .. -DINSTALL_THIRD_PARTY_LIBS=ON
+# Draw Core
 
-```
-
-# Title
-
-This is an example file with maximal choices selected.
-
-This is a long description.
+Draw Core is a library designed for the long awaited master piece **Draw**
 
 ## Table of Contents
 
@@ -22,34 +11,35 @@ This is a long description.
 - [Contributing](#contributing)
 - [License](#license)
 
-## Security
-
-### Any optional sections
-
 ## Background
 
-### Any optional sections
+Draw is a game designed by four hooligans in the summer of 2023. Draw Core is
+another implementation of **Draw**'s core logic. This time built in cpp, and
+intended to be the beginning of **Draw**'s end.
 
 ## Install
 
-This module depends upon a knowledge of [Markdown]().
 
-```
+```bash
+mkdir build
+cd build
+cmake ..
+cmake --build .
+cmake --install .
 ```
 
-### Any optional sections
+### Build Options
+
+```bash
+-DBUILD_TESTS=ON
+```
 
 ## Usage
 
-```
-```
+Install with cmake
 
-### Any optional sections
+```
+```
 
 ## API
 
-### Any optional sections
-
-## More optional sections
-
-### Any optional sections
