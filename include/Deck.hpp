@@ -1,8 +1,6 @@
 #ifndef DECK_HPP
 #define DECK_HPP
 
-#include <cstdlib>
-#include <cstring>
 #include <random>
 #include "Card.hpp"
 
