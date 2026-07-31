@@ -26,6 +26,31 @@ namespace game {
     this->mDrawPile = shuffledCards;
   }
 
-  std::vector<Card> Deck::DrawCards() {}
+  std::vector<Card> Deck::DrawCards() { return std::vector<Card>(); }
 
+  bool Deck::ResetDiscardPile() {
+    // No cards to reset
+    if (this->mDiscardPile.size() == 1) {
+      return false;
+    }
+    // Deck initialization -> add a single card to play off of
+    if (this->mDiscardPile.size() == 0 && this->mDrawPile.size() > 0) {
+      this->mDiscardPile.emplace_back(this->mDrawPile[this->mDrawPile.size() - 1]);
+      this->mDrawPile.pop_back();
+      return true;
+    }
+
+    if (this->mDiscardPile.size() == 0 && this->mDrawPile.size() == 0) {
+      return false;
+    }
+    // Last element in the array is what player act on; thus everything else should stay
+    auto newDiscardPile = std::vector<Card>();
+    newDiscardPile.emplace_back(this->mDiscardPile[this->mDiscardPile.size() - 1]);
+
+    for (int i = 0; i < this->mDiscardPile.size() - 1; i++) {
+      this->mDrawPile.emplace_back(this->mDiscardPile[i]);
+    }
+    this->ShuffleCards();
+    return true;
+  }
 };

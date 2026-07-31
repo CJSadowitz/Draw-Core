@@ -43,8 +43,10 @@ namespace game {
 
       /**
        * @brief Reshuffles discard pile back into draw, placing a single card on the top of discard
+       *
+       * @return successful reset; on false means there is only 1 card in discard and cannot be put into draw pile
        */
-      void ResetDiscardPile();
+      bool ResetDiscardPile();
 
       std::vector<Card> GetDrawPile() {
         return this->mDrawPile;
