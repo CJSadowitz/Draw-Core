@@ -42,4 +42,13 @@ namespace game {
     free(drawPile);
   }
 
+  Card* Deck::DrawCards() {
+    if (this->mDiscardPileSize == 0) {
+      return nullptr;
+    }
+
+    Card topCard = this->mDiscardPile[0];
+    return nullptr;
+  }
+
 };

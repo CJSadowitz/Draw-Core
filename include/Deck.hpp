@@ -21,18 +21,29 @@ namespace game {
 
       ~Deck();
 
+      /**
+       * @brief Returns all drawn cards until value or type matches top discard
+       *
+       * @return nullptr for inability to get a playable card, otherwise returns array of cards
+       */
       Card* DrawCards();
 
+      /**
+       * @brief On card played, resign or loss, add cards to end of draw pile and shuffle
+       *
+       * @param cards  takes an array of cards to add
+       * @param amount any number of cards greater than or equal to 1
+       */
       void AddCards(Card* cards, size_t amount);
 
       /**
        * @brief Shuffles the cards in the draw pile through Fisher-Yates Alg
-       *
-       * Current O(n^2) implementation instead of O(n)
-       * Generates a new array for each element removed, reduced by one element
        */
       void ShuffleCards();
 
+      /**
+       * @brief Reshuffles discard pile back into draw, placing a single card on the top of discard
+       */
       void ResetDiscardPile();
 
       Card* GetDrawPile() {
