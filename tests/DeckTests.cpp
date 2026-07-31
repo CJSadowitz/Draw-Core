@@ -1,7 +1,6 @@
 #include "Card.hpp"
 #include "Deck.hpp"
 #include <catch2/catch_test_macros.hpp>
-#include <iostream>
 
 TEST_CASE("Cards are shuffling", "[shuffle]") {
   unsigned int seed = 1;
@@ -149,5 +148,58 @@ TEST_CASE("Draw a lot of cards", "[drawCards]") {
   REQUIRE(deck.ResetDiscardPile());
   deck.ShuffleCards();
   REQUIRE(deck.DrawCards(drawnCards));
+}
+
+TEST_CASE("Add no cards to an empty deck", "[addCards]") {
+  unsigned int seed = 1;
+  auto cards = std::vector<game::Card>();
+  game::Deck deck(cards, seed);
+  REQUIRE(!deck.AddCards(cards));
+}
+
+TEST_CASE("Add no cards to a deck", "[addCards]") {
+  unsigned int seed = 1;
+  size_t cardAmount = 2;
+  auto cards = std::vector<game::Card>();
+  for (int i = 0; i < cardAmount; i++) {
+    game::Card c{game::CardType::RED, static_cast<game::CardValue>(i)};
+    cards.emplace_back(c);
+  }
+  game::Deck deck(cards, seed);
+  auto addedCards = std::vector<game::Card>();
+  REQUIRE(deck.GetDrawPile().size() == cardAmount);
+  REQUIRE(!deck.AddCards(addedCards));
+  REQUIRE(deck.GetDrawPile().size() == cardAmount);
+}
+
+TEST_CASE("Add cards to an empty deck", "[addCards]") {
+  unsigned int seed = 1;
+  size_t cardAmount = 2;
+  auto addedCards = std::vector<game::Card>();
+  for (int i = 0; i < cardAmount; i++) {
+    game::Card c{game::CardType::RED, static_cast<game::CardValue>(i)};
+    addedCards.emplace_back(c);
+  }
+  auto cards = std::vector<game::Card>();
+  game::Deck deck(cards, seed);
+  REQUIRE(deck.AddCards(addedCards));
+  REQUIRE(addedCards.size() == 0);
+  REQUIRE(deck.GetDrawPile().size() == 2);
+}
+
+TEST_CASE("Add cards to a deck", "[addCards]") {
+  unsigned int seed = 1;
+  size_t cardAmount = 2;
+  auto cards = std::vector<game::Card>();
+  auto addedCards = std::vector<game::Card>();
+  for (int i = 0; i < cardAmount; i++) {
+    game::Card c{game::CardType::RED, static_cast<game::CardValue>(i)};
+    cards.emplace_back(c);
+    addedCards.emplace_back(c);
+  }
+  game::Deck deck(cards, seed);
+  REQUIRE(deck.AddCards(addedCards));
+  REQUIRE(addedCards.size() == 0);
+  REQUIRE(deck.GetDrawPile().size() == 4);
 }
 

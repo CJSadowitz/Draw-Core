@@ -34,7 +34,7 @@ namespace game {
        * @param cards  takes an array of cards to add
        * @param amount any number of cards greater than or equal to 1
        */
-      void AddCards(std::vector<Card> cards);
+      bool AddCards(std::vector<Card>& cards);
 
       /**
        * @brief Shuffles the cards in the draw pile through Fisher-Yates Alg

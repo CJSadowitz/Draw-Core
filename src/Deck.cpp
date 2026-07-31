@@ -82,4 +82,16 @@ namespace game {
     this->ShuffleCards();
     return true;
   }
+
+  bool Deck::AddCards(std::vector<Card>& cards) {
+    if (cards.size() == 0) {
+      return false;
+    }
+    for (const auto& card : cards) {
+      this->mDrawPile.emplace_back(card);
+    }
+    this->ShuffleCards();
+    cards.clear();
+    return true;
+  }
 };
