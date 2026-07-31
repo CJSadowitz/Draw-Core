@@ -1,8 +1,6 @@
 #ifndef DECK_HPP
 #define DECK_HPP
 
-#include <cstdlib>
-#include <cstring>
 #include <random>
 #include "Card.hpp"
 
@@ -17,45 +15,48 @@ namespace game {
        * @param seed  Per game instance seed value
        *
        */
-      Deck(Card* cards, size_t size, unsigned int seed);
+      Deck(std::vector<Card> cards, unsigned int seed);
 
       ~Deck();
 
-      Card* DrawCards();
+      /**
+       * @brief Returns all drawn cards until value or type matches top discard
+       *
+       * @return nullptr for inability to get a playable card, otherwise returns array of cards
+       */
+      bool DrawCards(std::vector<Card>& drawnCards);
 
-      void AddCards(Card* cards, size_t amount);
+      /**
+       * @brief On card played, resign or loss, add cards to end of draw pile and shuffle
+       *
+       * @param cards  takes an array of cards to add
+       * @param amount any number of cards greater than or equal to 1
+       */
+      bool AddCards(std::vector<Card>& cards);
 
       /**
        * @brief Shuffles the cards in the draw pile through Fisher-Yates Alg
-       *
-       * Current O(n^2) implementation instead of O(n)
-       * Generates a new array for each element removed, reduced by one element
        */
       void ShuffleCards();
 
-      void ResetDiscardPile();
+      /**
+       * @brief Reshuffles discard pile back into draw, placing a single card on the top of discard
+       *
+       * @return successful reset; on false means there is only 1 card in discard and cannot be put into draw pile
+       */
+      bool ResetDiscardPile();
 
-      Card* GetDrawPile() {
+      std::vector<Card> GetDrawPile() {
         return this->mDrawPile;
       }
 
-      unsigned int GetDrawPileSize() {
-        return this->mDrawPileSize;
-      }
-
-      Card* GetDiscardPile() {
+      std::vector<Card> GetDiscardPile() {
         return this->mDiscardPile;
       }
 
-      unsigned int GetDiscardPileSize() {
-        return this->mDiscardPileSize;
-      }
-
     private:
-      Card* mDrawPile = nullptr;
-      Card* mDiscardPile = nullptr;
-      unsigned int mDrawPileSize;
-      unsigned int mDiscardPileSize;
+      std::vector<Card> mDrawPile;
+      std::vector<Card> mDiscardPile;
       std::mt19937 mSeed;
   };
 };

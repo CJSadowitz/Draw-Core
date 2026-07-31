@@ -1,45 +1,97 @@
 #include "Deck.hpp"
-#include <cstdlib>
-#include <cstring>
 
 namespace game {
-  Deck::Deck(Card* cards, size_t size, unsigned int seed) {
+  Deck::Deck(std::vector<Card> cards, unsigned int seed) {
     // May have to move this to Engine class
     this->mSeed.seed(seed);
 
-    this->mDrawPile = (Card*) std::malloc(size * sizeof(Card));
-    std::memcpy(this->mDrawPile, cards, size * sizeof(Card));
-    
-    this->mDrawPileSize = size;
+    this->mDrawPile = cards;
   }
 
-  Deck::~Deck() {
-    if (this->mDrawPile) { free(this->mDrawPile); }
-    if (this->mDiscardPile) { free(this->mDiscardPile); }
-  }
+  Deck::~Deck() {}
 
   void Deck::ShuffleCards() {
-    Card* drawPile = (Card*) std::malloc(this->mDrawPileSize * sizeof(Card));
-    std::memcpy(drawPile, this->mDrawPile, this->mDrawPileSize * sizeof(Card));
-    Card* shuffledCards = (Card*) std::malloc(this->mDrawPileSize * sizeof(Card));
-    if (shuffledCards == nullptr) {
-      // Think about logging and exiting...
-      exit(EXIT_FAILURE);
-    }
+    auto shuffledCards = std::vector<Card>();
 
-    unsigned int remainingCards = this->mDrawPileSize;
-    for (int i = 0; i < this->mDrawPileSize; i++) {
+    unsigned int totalCards = this->mDrawPile.size();
+    unsigned int remainingCards = this->mDrawPile.size();
+    while (remainingCards != 0) {
       std::uniform_int_distribution<int> distr(0, remainingCards - 1);
       int index = distr(this->mSeed);
-      shuffledCards[i] = drawPile[index];
-      for (int j = index; j < remainingCards - 1; j++) {
-        drawPile[j] = drawPile[j + 1];
-      }
+      shuffledCards.emplace_back(this->mDrawPile[index]);
+      this->mDrawPile[index] = this->mDrawPile[remainingCards - 1];
       remainingCards--;
     }
-    std::memcpy(this->mDrawPile, shuffledCards, this->mDrawPileSize * sizeof(Card));
-    free(shuffledCards);
-    free(drawPile);
+
+    this->mDrawPile = shuffledCards;
   }
 
+  bool Deck::DrawCards(std::vector<Card>& drawnCards) { 
+    if (this->mDrawPile.size() == 0 && this->mDiscardPile.size() == 0) {
+      return false;
+    }
+
+    auto topCard = this->mDiscardPile[this->mDiscardPile.size() - 1];
+
+    int i = this->mDrawPile.size() - 1;
+    auto card = this->mDrawPile[i];
+    this->mDrawPile.pop_back();
+    bool isSameType  = card.type == topCard.type;
+    bool isSameValue = card.value == topCard.value;
+    bool isWildCard  = card.type == CardType::WILD;
+    while (!isSameType && !isSameValue && !isWildCard) {
+      if (i == 0) {
+        drawnCards = std::vector<Card>();
+        return false;
+      }
+      drawnCards.emplace_back(card);
+      i--;
+      card = this->mDrawPile[i];
+      isSameValue = card.value == topCard.value;
+      isSameType = card.type == topCard.type;
+      isWildCard  = card.type == CardType::WILD;
+      this->mDrawPile.pop_back();
+    }
+
+    drawnCards.emplace_back(card);
+    return true;
+  }
+
+  bool Deck::ResetDiscardPile() {
+    // No cards to reset
+    if (this->mDiscardPile.size() == 1) {
+      return false;
+    }
+    // Deck initialization -> add a single card to play off of
+    if (this->mDiscardPile.size() == 0 && this->mDrawPile.size() > 0) {
+      this->mDiscardPile.emplace_back(this->mDrawPile[this->mDrawPile.size() - 1]);
+      this->mDrawPile.pop_back();
+      return true;
+    }
+
+    if (this->mDiscardPile.size() == 0 && this->mDrawPile.size() == 0) {
+      return false;
+    }
+    // Last element in the array is what player act on; thus everything else should stay
+    auto newDiscardPile = std::vector<Card>();
+    newDiscardPile.emplace_back(this->mDiscardPile[this->mDiscardPile.size() - 1]);
+
+    for (int i = 0; i < this->mDiscardPile.size() - 1; i++) {
+      this->mDrawPile.emplace_back(this->mDiscardPile[i]);
+    }
+    this->ShuffleCards();
+    return true;
+  }
+
+  bool Deck::AddCards(std::vector<Card>& cards) {
+    if (cards.size() == 0) {
+      return false;
+    }
+    for (const auto& card : cards) {
+      this->mDrawPile.emplace_back(card);
+    }
+    this->ShuffleCards();
+    cards.clear();
+    return true;
+  }
 };

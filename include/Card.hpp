@@ -11,6 +11,7 @@ namespace game {
   };
 
   enum CardValue {
+    ZERO,
     ONE,
     TWO,
     THREE,

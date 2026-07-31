@@ -1,3 +1,4 @@
+#include "Card.hpp"
 #include "Deck.hpp"
 #include <catch2/catch_test_macros.hpp>
 
@@ -5,37 +6,200 @@ TEST_CASE("Cards are shuffling", "[shuffle]") {
   unsigned int seed = 1;
 
   size_t cardAmount = 5;
-  game::Card* cards = (game::Card*) std::malloc(cardAmount * sizeof(game::Card));
+  auto cards = std::vector<game::Card>();
   for (int i = 0; i < cardAmount; i++) {
     game::Card c{game::CardType::RED, static_cast<game::CardValue>(i)};
-    cards[i] = c;
+    cards.emplace_back(c);
   }
 
-  game::Deck deck(cards, cardAmount, seed);
+  game::Deck deck(cards, seed);
   deck.ShuffleCards();
 
-  game::Card* shuffledCards = (game::Card*) std::malloc(cardAmount * sizeof(game::Card));
-  std::memcpy(shuffledCards, deck.GetDrawPile(), cardAmount * sizeof(game::Card));
+  auto shuffledCards = deck.GetDrawPile();
+  auto test = std::vector<game::Card>();
 
-  game::Card* test = (game::Card*) std::malloc(cardAmount * sizeof(game::Card));
-
-  test[0] = game::Card{game::CardType::RED, static_cast<game::CardValue>(2)};
-  test[1] = game::Card{game::CardType::RED, static_cast<game::CardValue>(4)};
-  test[2] = game::Card{game::CardType::RED, static_cast<game::CardValue>(3)};
-  test[3] = game::Card{game::CardType::RED, static_cast<game::CardValue>(1)};
-  test[4] = game::Card{game::CardType::RED, static_cast<game::CardValue>(0)};
+  test.emplace_back(game::Card{game::CardType::RED, static_cast<game::CardValue>(2)});
+  test.emplace_back(game::Card{game::CardType::RED, static_cast<game::CardValue>(3)});
+  test.emplace_back(game::Card{game::CardType::RED, static_cast<game::CardValue>(4)});
+  test.emplace_back(game::Card{game::CardType::RED, static_cast<game::CardValue>(1)});
+  test.emplace_back(game::Card{game::CardType::RED, static_cast<game::CardValue>(0)});
 
   for (int i = 0; i < cardAmount; i++) {
     REQUIRE(shuffledCards[i].value == test[i].value);
   }
+}
 
-  if (cards) {
-    free(cards);
-    cards = nullptr;
+TEST_CASE("Shuffling empty deck", "[shuffle]") {
+  unsigned int seed = 1;
+  game::Deck deck(std::vector<game::Card>(), seed);
+  deck.ShuffleCards();
+  REQUIRE(deck.GetDrawPile().size() == 0);
+}
+
+TEST_CASE("Resetting discard pile", "[resetDiscard]") {
+  unsigned int seed = 1;
+  size_t cardAmount = 10;
+  auto cards = std::vector<game::Card>();
+  for (int i = 0; i < cardAmount; i++) {
+    game::Card c{game::CardType::RED, static_cast<game::CardValue>(i)};
+    cards.emplace_back(c);
   }
-  if (shuffledCards) {
-    free(shuffledCards);
-    shuffledCards = nullptr;
+
+  game::Deck deck(cards, seed);
+  deck.ShuffleCards();
+
+  REQUIRE(deck.ResetDiscardPile());
+  REQUIRE(deck.GetDiscardPile().size() == 1);
+  REQUIRE(deck.GetDrawPile().size() == 9);
+  REQUIRE(!deck.ResetDiscardPile());
+}
+
+TEST_CASE("Resetting empty deck", "[resetDiscard]") {
+  unsigned int seed = 1;
+  auto cards = std::vector<game::Card>();
+  game::Deck deck(cards, seed);
+  deck.ShuffleCards();
+  REQUIRE(!deck.ResetDiscardPile());
+}
+
+TEST_CASE("Draw cards from empty deck", "[drawCards]") {
+  unsigned int seed = 1;
+  auto cards = std::vector<game::Card>();
+  auto drawnCards = std::vector<game::Card>();
+  game::Deck deck(cards, seed);
+  REQUIRE(!deck.DrawCards(drawnCards));
+}
+
+TEST_CASE("Draw card same type", "[drawCards]") {
+  unsigned int seed = 1;
+  size_t cardAmount = 2;
+  auto cards = std::vector<game::Card>();
+  for (int i = 0; i < cardAmount; i++) {
+    game::Card c{game::CardType::RED, static_cast<game::CardValue>(i)};
+    cards.emplace_back(c);
   }
+  auto drawnCards = std::vector<game::Card>();
+  game::Deck deck(cards, seed);
+  REQUIRE(deck.ResetDiscardPile());
+  REQUIRE(deck.DrawCards(drawnCards));
+  REQUIRE(drawnCards[0].value == game::CardValue::ZERO);
+}
+
+TEST_CASE("Draw card same value", "[drawCards]") {
+  unsigned int seed = 1;
+  auto cards = std::vector<game::Card>();
+  game::Card c1{game::CardType::RED, game::CardValue::TWO};
+  cards.emplace_back(c1);
+  game::Card c2{game::CardType::GREEN, game::CardValue::TWO};
+  cards.emplace_back(c2);
+  auto drawnCards = std::vector<game::Card>();
+  game::Deck deck(cards, seed);
+  REQUIRE(deck.ResetDiscardPile());
+  REQUIRE(deck.DrawCards(drawnCards));
+  REQUIRE(drawnCards[0].type == game::CardType::RED);
+}
+
+TEST_CASE("Draw card wild", "[drawCards]") {
+  // Nothing stops type and value overlapping in undesired way...
+  unsigned int seed = 1;
+  auto cards = std::vector<game::Card>();
+  game::Card c1{game::CardType::WILD, game::CardValue::ZERO};
+  cards.emplace_back(c1);
+  game::Card c2{game::CardType::RED, game::CardValue::CHANGE_COLOR};
+  cards.emplace_back(c2);
+  auto drawnCards = std::vector<game::Card>();
+  game::Deck deck(cards, seed);
+  REQUIRE(deck.ResetDiscardPile());
+  REQUIRE(deck.DrawCards(drawnCards));
+  REQUIRE(drawnCards[0].type == game::CardType::WILD);
+}
+
+TEST_CASE("No valid drawable card", "[drawCards]") {
+  unsigned int seed = 1;
+  auto cards = std::vector<game::Card>();
+  game::Card c1{game::CardType::RED,    game::CardValue::ZERO};
+  game::Card c2{game::CardType::GREEN,  game::CardValue::ONE};
+  game::Card c3{game::CardType::BLUE,   game::CardValue::TWO};
+  game::Card c4{game::CardType::YELLOW, game::CardValue::THREE};
+  cards.emplace_back(c1);
+  cards.emplace_back(c2);
+  cards.emplace_back(c3);
+  cards.emplace_back(c4);
+  auto drawnCards = std::vector<game::Card>();
+  game::Deck deck(cards, seed);
+  REQUIRE(deck.ResetDiscardPile());
+  REQUIRE(!deck.DrawCards(drawnCards));
+  REQUIRE(drawnCards.size() == 0);
+}
+
+TEST_CASE("Draw a lot of cards", "[drawCards]") {
+  unsigned int seed = 1;
+  size_t cardAmount = 5;
+  size_t typeAmount = 3;
+  auto cards = std::vector<game::Card>();
+  for (int i = 0; i < cardAmount; i++) {
+    for (int j = 0; j < typeAmount; j++) {
+      game::Card c{static_cast<game::CardType>(j), static_cast<game::CardValue>(i)};
+      cards.emplace_back(c);
+    }
+  }
+  auto drawnCards = std::vector<game::Card>();
+  game::Deck deck(cards, seed);
+  REQUIRE(deck.ResetDiscardPile());
+  deck.ShuffleCards();
+  REQUIRE(deck.DrawCards(drawnCards));
+}
+
+TEST_CASE("Add no cards to an empty deck", "[addCards]") {
+  unsigned int seed = 1;
+  auto cards = std::vector<game::Card>();
+  game::Deck deck(cards, seed);
+  REQUIRE(!deck.AddCards(cards));
+}
+
+TEST_CASE("Add no cards to a deck", "[addCards]") {
+  unsigned int seed = 1;
+  size_t cardAmount = 2;
+  auto cards = std::vector<game::Card>();
+  for (int i = 0; i < cardAmount; i++) {
+    game::Card c{game::CardType::RED, static_cast<game::CardValue>(i)};
+    cards.emplace_back(c);
+  }
+  game::Deck deck(cards, seed);
+  auto addedCards = std::vector<game::Card>();
+  REQUIRE(deck.GetDrawPile().size() == cardAmount);
+  REQUIRE(!deck.AddCards(addedCards));
+  REQUIRE(deck.GetDrawPile().size() == cardAmount);
+}
+
+TEST_CASE("Add cards to an empty deck", "[addCards]") {
+  unsigned int seed = 1;
+  size_t cardAmount = 2;
+  auto addedCards = std::vector<game::Card>();
+  for (int i = 0; i < cardAmount; i++) {
+    game::Card c{game::CardType::RED, static_cast<game::CardValue>(i)};
+    addedCards.emplace_back(c);
+  }
+  auto cards = std::vector<game::Card>();
+  game::Deck deck(cards, seed);
+  REQUIRE(deck.AddCards(addedCards));
+  REQUIRE(addedCards.size() == 0);
+  REQUIRE(deck.GetDrawPile().size() == 2);
+}
+
+TEST_CASE("Add cards to a deck", "[addCards]") {
+  unsigned int seed = 1;
+  size_t cardAmount = 2;
+  auto cards = std::vector<game::Card>();
+  auto addedCards = std::vector<game::Card>();
+  for (int i = 0; i < cardAmount; i++) {
+    game::Card c{game::CardType::RED, static_cast<game::CardValue>(i)};
+    cards.emplace_back(c);
+    addedCards.emplace_back(c);
+  }
+  game::Deck deck(cards, seed);
+  REQUIRE(deck.AddCards(addedCards));
+  REQUIRE(addedCards.size() == 0);
+  REQUIRE(deck.GetDrawPile().size() == 4);
 }
 
