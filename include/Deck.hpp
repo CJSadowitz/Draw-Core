@@ -26,7 +26,7 @@ namespace game {
        *
        * @return nullptr for inability to get a playable card, otherwise returns array of cards
        */
-      std::vector<Card> DrawCards();
+      bool DrawCards(std::vector<Card>& drawnCards);
 
       /**
        * @brief On card played, resign or loss, add cards to end of draw pile and shuffle
