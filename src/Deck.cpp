@@ -1,5 +1,4 @@
 #include "Deck.hpp"
-#include <iostream>
 
 namespace game {
   Deck::Deck(std::vector<Card> cards, unsigned int seed) {
@@ -48,6 +47,9 @@ namespace game {
       drawnCards.emplace_back(card);
       i--;
       card = this->mDrawPile[i];
+      isSameValue = card.value == topCard.value;
+      isSameType = card.type == topCard.type;
+      isWildCard  = card.type == CardType::WILD;
       this->mDrawPile.pop_back();
     }
 

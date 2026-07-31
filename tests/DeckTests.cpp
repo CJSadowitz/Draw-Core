@@ -1,6 +1,7 @@
 #include "Card.hpp"
 #include "Deck.hpp"
 #include <catch2/catch_test_macros.hpp>
+#include <iostream>
 
 TEST_CASE("Cards are shuffling", "[shuffle]") {
   unsigned int seed = 1;
@@ -16,7 +17,6 @@ TEST_CASE("Cards are shuffling", "[shuffle]") {
   deck.ShuffleCards();
 
   auto shuffledCards = deck.GetDrawPile();
-
   auto test = std::vector<game::Card>();
 
   test.emplace_back(game::Card{game::CardType::RED, static_cast<game::CardValue>(2)});
@@ -132,3 +132,22 @@ TEST_CASE("No valid drawable card", "[drawCards]") {
   REQUIRE(!deck.DrawCards(drawnCards));
   REQUIRE(drawnCards.size() == 0);
 }
+
+TEST_CASE("Draw a lot of cards", "[drawCards]") {
+  unsigned int seed = 1;
+  size_t cardAmount = 5;
+  size_t typeAmount = 3;
+  auto cards = std::vector<game::Card>();
+  for (int i = 0; i < cardAmount; i++) {
+    for (int j = 0; j < typeAmount; j++) {
+      game::Card c{static_cast<game::CardType>(j), static_cast<game::CardValue>(i)};
+      cards.emplace_back(c);
+    }
+  }
+  auto drawnCards = std::vector<game::Card>();
+  game::Deck deck(cards, seed);
+  REQUIRE(deck.ResetDiscardPile());
+  deck.ShuffleCards();
+  REQUIRE(deck.DrawCards(drawnCards));
+}
+
