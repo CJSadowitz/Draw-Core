@@ -1,54 +1,31 @@
 #include "Deck.hpp"
-#include <cstdlib>
-#include <cstring>
 
 namespace game {
-  Deck::Deck(Card* cards, size_t size, unsigned int seed) {
+  Deck::Deck(std::vector<Card> cards, unsigned int seed) {
     // May have to move this to Engine class
     this->mSeed.seed(seed);
 
-    this->mDrawPile = (Card*) std::malloc(size * sizeof(Card));
-    std::memcpy(this->mDrawPile, cards, size * sizeof(Card));
-    
-    this->mDrawPileSize = size;
+    this->mDrawPile = cards;
   }
 
-  Deck::~Deck() {
-    if (this->mDrawPile) { free(this->mDrawPile); }
-    if (this->mDiscardPile) { free(this->mDiscardPile); }
-  }
+  Deck::~Deck() {}
 
   void Deck::ShuffleCards() {
-    Card* drawPile = (Card*) std::malloc(this->mDrawPileSize * sizeof(Card));
-    std::memcpy(drawPile, this->mDrawPile, this->mDrawPileSize * sizeof(Card));
-    Card* shuffledCards = (Card*) std::malloc(this->mDrawPileSize * sizeof(Card));
-    if (shuffledCards == nullptr) {
-      // Think about logging and exiting...
-      exit(EXIT_FAILURE);
-    }
+    auto shuffledCards = std::vector<Card>();
 
-    unsigned int remainingCards = this->mDrawPileSize;
-    for (int i = 0; i < this->mDrawPileSize; i++) {
+    unsigned int totalCards = this->mDrawPile.size();
+    unsigned int remainingCards = this->mDrawPile.size();
+    while (remainingCards != 0) {
       std::uniform_int_distribution<int> distr(0, remainingCards - 1);
       int index = distr(this->mSeed);
-      shuffledCards[i] = drawPile[index];
-      for (int j = index; j < remainingCards - 1; j++) {
-        drawPile[j] = drawPile[j + 1];
-      }
+      shuffledCards.emplace_back(this->mDrawPile[index]);
+      this->mDrawPile[index] = this->mDrawPile[remainingCards - 1];
       remainingCards--;
     }
-    std::memcpy(this->mDrawPile, shuffledCards, this->mDrawPileSize * sizeof(Card));
-    free(shuffledCards);
-    free(drawPile);
+
+    this->mDrawPile = shuffledCards;
   }
 
-  Card* Deck::DrawCards() {
-    if (this->mDiscardPileSize == 0) {
-      return nullptr;
-    }
-
-    Card topCard = this->mDiscardPile[0];
-    return nullptr;
-  }
+  std::vector<Card> Deck::DrawCards() {}
 
 };

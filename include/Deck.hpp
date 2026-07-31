@@ -17,7 +17,7 @@ namespace game {
        * @param seed  Per game instance seed value
        *
        */
-      Deck(Card* cards, size_t size, unsigned int seed);
+      Deck(std::vector<Card> cards, unsigned int seed);
 
       ~Deck();
 
@@ -26,7 +26,7 @@ namespace game {
        *
        * @return nullptr for inability to get a playable card, otherwise returns array of cards
        */
-      Card* DrawCards();
+      std::vector<Card> DrawCards();
 
       /**
        * @brief On card played, resign or loss, add cards to end of draw pile and shuffle
@@ -34,7 +34,7 @@ namespace game {
        * @param cards  takes an array of cards to add
        * @param amount any number of cards greater than or equal to 1
        */
-      void AddCards(Card* cards, size_t amount);
+      void AddCards(std::vector<Card> cards);
 
       /**
        * @brief Shuffles the cards in the draw pile through Fisher-Yates Alg
@@ -46,27 +46,17 @@ namespace game {
        */
       void ResetDiscardPile();
 
-      Card* GetDrawPile() {
+      std::vector<Card> GetDrawPile() {
         return this->mDrawPile;
       }
 
-      unsigned int GetDrawPileSize() {
-        return this->mDrawPileSize;
-      }
-
-      Card* GetDiscardPile() {
+      std::vector<Card> GetDiscardPile() {
         return this->mDiscardPile;
       }
 
-      unsigned int GetDiscardPileSize() {
-        return this->mDiscardPileSize;
-      }
-
     private:
-      Card* mDrawPile = nullptr;
-      Card* mDiscardPile = nullptr;
-      unsigned int mDrawPileSize;
-      unsigned int mDiscardPileSize;
+      std::vector<Card> mDrawPile;
+      std::vector<Card> mDiscardPile;
       std::mt19937 mSeed;
   };
 };
