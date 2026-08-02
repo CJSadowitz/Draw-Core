@@ -1,5 +1,6 @@
 #include "Player.hpp"
 #include <optional>
+#include <iostream>
 
 namespace game {
   Player::Player(std::vector<Card> cards) {
@@ -66,27 +67,27 @@ namespace game {
   std::optional<std::vector<Card>> Player::GetCards(CardType type) {
     switch(type) {
       case(CardType::RED):
-        if (this->mRedCards.size() > 1) {
+        if (this->mRedCards.size() > 0) {
           return this->mRedCards;
         }
         break;
       case(CardType::GREEN):
-        if (this->mGreenCards.size() > 1) {
+        if (this->mGreenCards.size() > 0) {
           return this->mGreenCards;
         }
         break;
       case(CardType::BLUE):
-        if (this->mBlueCards.size() > 1) {
+        if (this->mBlueCards.size() > 0) {
           return this->mBlueCards;
         }
         break;
       case(CardType::YELLOW):
-        if (this->mYellowCards.size() > 1) {
+        if (this->mYellowCards.size() > 0) {
           return this->mYellowCards;
         }
         break;
       case(CardType::WILD):
-        if (this->mWildCards.size() > 1) {
+        if (this->mWildCards.size() > 0) {
           return this->mWildCards;
         }
         break;
