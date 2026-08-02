@@ -1,6 +1,5 @@
 #include "Player.hpp"
 #include <optional>
-#include <iostream>
 
 namespace game {
   Player::Player(std::vector<Card> cards) {
