@@ -200,3 +200,17 @@ TEST_CASE("Add cards to a deck", "[addCards]") {
   REQUIRE(deck.GetDrawPile().size() == 4);
 }
 
+TEST_CASE("Draw Single Card", "[drawCard]") {
+  unsigned int seed = 1;
+  size_t cardAmount = 5;
+  auto cards = std::vector<game::Card>();
+  for (int i = 0; i < cardAmount; i++) {
+    game::Card c{game::CardType::RED, static_cast<game::CardValue>(i)};
+    cards.emplace_back(c);
+  }
+  game::Deck deck(cards, seed);
+  auto card = deck.DrawCard();
+  REQUIRE(card);
+  REQUIRE(card.value().value == 4);
+}
+
