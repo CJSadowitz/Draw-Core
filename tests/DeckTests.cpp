@@ -65,9 +65,8 @@ TEST_CASE("Resetting empty deck", "[resetDiscard]") {
 TEST_CASE("Draw cards from empty deck", "[drawCards]") {
   unsigned int seed = 1;
   auto cards = std::vector<game::Card>();
-  auto drawnCards = std::vector<game::Card>();
   game::Deck deck(cards, seed);
-  REQUIRE(!deck.DrawCards(drawnCards));
+  REQUIRE(!deck.DrawCards());
 }
 
 TEST_CASE("Draw card same type", "[drawCards]") {
@@ -78,11 +77,11 @@ TEST_CASE("Draw card same type", "[drawCards]") {
     game::Card c{game::CardType::RED, static_cast<game::CardValue>(i)};
     cards.emplace_back(c);
   }
-  auto drawnCards = std::vector<game::Card>();
   game::Deck deck(cards, seed);
   REQUIRE(deck.ResetDiscardPile());
-  REQUIRE(deck.DrawCards(drawnCards));
-  REQUIRE(drawnCards[0].value == game::CardValue::ZERO);
+  auto drawnCards = deck.DrawCards();
+  REQUIRE(drawnCards);
+  REQUIRE(drawnCards.value()[0].value == game::CardValue::ZERO);
 }
 
 TEST_CASE("Draw card same value", "[drawCards]") {
@@ -92,11 +91,11 @@ TEST_CASE("Draw card same value", "[drawCards]") {
   cards.emplace_back(c1);
   game::Card c2{game::CardType::GREEN, game::CardValue::TWO};
   cards.emplace_back(c2);
-  auto drawnCards = std::vector<game::Card>();
   game::Deck deck(cards, seed);
   REQUIRE(deck.ResetDiscardPile());
-  REQUIRE(deck.DrawCards(drawnCards));
-  REQUIRE(drawnCards[0].type == game::CardType::RED);
+  auto drawnCards = deck.DrawCards();
+  REQUIRE(drawnCards);
+  REQUIRE(drawnCards.value()[0].type == game::CardType::RED);
 }
 
 TEST_CASE("Draw card wild", "[drawCards]") {
@@ -107,11 +106,11 @@ TEST_CASE("Draw card wild", "[drawCards]") {
   cards.emplace_back(c1);
   game::Card c2{game::CardType::RED, game::CardValue::CHANGE_COLOR};
   cards.emplace_back(c2);
-  auto drawnCards = std::vector<game::Card>();
   game::Deck deck(cards, seed);
   REQUIRE(deck.ResetDiscardPile());
-  REQUIRE(deck.DrawCards(drawnCards));
-  REQUIRE(drawnCards[0].type == game::CardType::WILD);
+  auto drawnCards = deck.DrawCards();
+  REQUIRE(drawnCards);
+  REQUIRE(drawnCards.value()[0].type == game::CardType::WILD);
 }
 
 TEST_CASE("No valid drawable card", "[drawCards]") {
@@ -125,11 +124,10 @@ TEST_CASE("No valid drawable card", "[drawCards]") {
   cards.emplace_back(c2);
   cards.emplace_back(c3);
   cards.emplace_back(c4);
-  auto drawnCards = std::vector<game::Card>();
   game::Deck deck(cards, seed);
   REQUIRE(deck.ResetDiscardPile());
-  REQUIRE(!deck.DrawCards(drawnCards));
-  REQUIRE(drawnCards.size() == 0);
+  auto drawnCards = deck.DrawCards();
+  REQUIRE(!drawnCards);
 }
 
 TEST_CASE("Draw a lot of cards", "[drawCards]") {
@@ -143,11 +141,10 @@ TEST_CASE("Draw a lot of cards", "[drawCards]") {
       cards.emplace_back(c);
     }
   }
-  auto drawnCards = std::vector<game::Card>();
   game::Deck deck(cards, seed);
   REQUIRE(deck.ResetDiscardPile());
   deck.ShuffleCards();
-  REQUIRE(deck.DrawCards(drawnCards));
+  REQUIRE(deck.DrawCards());
 }
 
 TEST_CASE("Add no cards to an empty deck", "[addCards]") {

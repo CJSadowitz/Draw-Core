@@ -1,4 +1,5 @@
 #include "Deck.hpp"
+#include <optional>
 
 namespace game {
   Deck::Deck(std::vector<Card> cards, unsigned int seed) {
@@ -26,11 +27,12 @@ namespace game {
     this->mDrawPile = shuffledCards;
   }
 
-  bool Deck::DrawCards(std::vector<Card>& drawnCards) { 
+  std::optional<std::vector<Card>> Deck::DrawCards() { 
     if (this->mDrawPile.size() == 0 && this->mDiscardPile.size() == 0) {
-      return false;
+      return std::nullopt;
     }
 
+    std::vector<Card> drawnCards = std::vector<Card>();
     auto topCard = this->mDiscardPile[this->mDiscardPile.size() - 1];
 
     int i = this->mDrawPile.size() - 1;
@@ -41,8 +43,7 @@ namespace game {
     bool isWildCard  = card.type == CardType::WILD;
     while (!isSameType && !isSameValue && !isWildCard) {
       if (i == 0) {
-        drawnCards = std::vector<Card>();
-        return false;
+        return std::nullopt;
       }
       drawnCards.emplace_back(card);
       i--;
@@ -54,7 +55,16 @@ namespace game {
     }
 
     drawnCards.emplace_back(card);
-    return true;
+    return drawnCards;
+  }
+
+  std::optional<Card> Deck::DrawCard() {
+    if (this->mDrawPile.size() == 0) {
+      return std::nullopt;
+    }
+    auto card = this->mDrawPile.back();
+    this->mDrawPile.pop_back();
+    return card;
   }
 
   bool Deck::ResetDiscardPile() {

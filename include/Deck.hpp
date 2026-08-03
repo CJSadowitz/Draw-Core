@@ -3,6 +3,7 @@
 
 #include <random>
 #include "Card.hpp"
+#include <optional>
 
 namespace game {
   class Deck {
@@ -22,9 +23,16 @@ namespace game {
       /**
        * @brief Returns all drawn cards until value or type matches top discard
        *
-       * @return nullptr for inability to get a playable card, otherwise returns array of cards
+       * @return nullopt for inability to get a playable card, otherwise returns array of cards
        */
-      bool DrawCards(std::vector<Card>& drawnCards);
+      std::optional<std::vector<Card>> DrawCards();
+
+      /**
+       * @brief Draw a single card: Useful for setting inital player hand
+       *
+       * @return nullopt for no cards to draw, otherwise returns the single card
+       */
+      std::optional<Card> DrawCard();
 
       /**
        * @brief On card played, resign or loss, add cards to end of draw pile and shuffle
