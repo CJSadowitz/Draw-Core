@@ -19,6 +19,11 @@ class Player {
       bool AddCards(std::vector<Card> cards);
 
       /**
+       * @brief Helper function for adding a single card to any section
+       */
+      void AddCard(Card card);
+
+      /**
        * @brief finds the top most playable card of the specified type
        *
        * @return returns the card or null if there is none
@@ -40,11 +45,6 @@ class Player {
       std::optional<std::vector<Card>> GetCards();
 
     private:
-      /**
-       * @brief Helper function for adding a single card to any section
-       */
-      void AddCard(Card card);
-
       std::vector<Card> mCards;
       // How can I not hardcode the han to have certain card types?
       std::vector<Card> mRedCards;

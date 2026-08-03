@@ -10,20 +10,26 @@
 namespace game {
   class DrawCore {
     public:
-      DrawCore(unsigned int seed, size_t playerCount);
+      DrawCore(unsigned int seed, size_t playerCount, std::vector<Card> cards = std::vector<Card>());
+
+      bool DealCards(unsigned int minimumDeckSize);
 
       void PlayCard(Card card);
 
       unsigned int GetPlayerTurn();
 
-    private:
+      void AddPlayer(Player player);
+
+      void RemovePlayer(Player player);
+
+      void SetDrawPile(std::vector<Card> cards);
 
       void GenerateGame();
 
-      unsigned int mSeed;
+    private:
       turn::TurnState mPlayerTurn;
-      Deck* mDeck;
-      Player mPlayers[];
+      Deck mDeck;
+      std::vector<Player> mPlayers;
   };
 
 };
