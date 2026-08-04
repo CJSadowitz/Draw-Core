@@ -7,17 +7,26 @@
 #include <cstdio>
 
 namespace game {
+  enum TurnDirection {
+    FORWARD,
+    BACKWARD
+  };
+  enum MoveType {
+    DRAW,
+    PLAY_CARD,
+    RESIGN
+  };
+  struct Move {
+    MoveType type;
+    Card card;
+  };
   class DrawCore {
     public:
       DrawCore(unsigned int seed, size_t playerCount, std::vector<Card> cards = std::vector<Card>());
 
       bool DealCards(unsigned int minimumDeckSize);
 
-      bool PlayCard(Card card);
-
-      bool IsLegalCard(Card card);
-
-      std::optional<Player> GetActivePlayer();
+      bool MakeMove(Move playerMove);
 
       void AddPlayer(Player player);
 
@@ -28,9 +37,19 @@ namespace game {
       void GenerateGame();
 
     private:
+
+      bool PlayDraw();
+
+      bool IsLegalCard(Card card);
+
+      bool PlayCard(Card card);
+
+      std::optional<Player> GetActivePlayer();
+
       Deck mDeck;
       bool mStacking = false;
       int mStackCount = 0;
+      TurnDirection mDirection = FORWARD;
       std::vector<Player> mPlayers;
   };
 
