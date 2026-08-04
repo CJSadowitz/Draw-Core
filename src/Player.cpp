@@ -123,5 +123,16 @@ namespace game {
     this->mCards.emplace_back(card);
   }
 
+  bool Player::HasCard(Card card) {
+    auto cards = this->GetCards(card.type);
+    if (!cards) {
+      return false;
+    }
+    if (cards.value().back().value == card.value && cards.value().back().type == card.type) {
+      return true;
+    }
+    return false;
+  }
+
 };
 

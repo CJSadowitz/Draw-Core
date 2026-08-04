@@ -45,6 +45,22 @@ class Player {
        */
       std::optional<std::vector<Card>> GetCards();
 
+      /**
+       * @brief returns the state of the player
+       *
+       * @return player state
+       */
+      turn::State GetTurnState() {
+        return this->mState.GetState();
+      }
+
+      /**
+       * @brief determines if the passed in card is on the top of any pile
+       *
+       * @return true if the card exists
+       */
+      bool HasCard(Card card);
+
     private:
       turn::TurnState mState;
       std::vector<Card> mCards;
