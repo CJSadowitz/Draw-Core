@@ -28,5 +28,36 @@ namespace game {
     } while(cardAmount > minimumDeckSize);
     return true;
   }
+
+  bool DrawCore::PlayCard(game::Card card) {
+    if (!this->IsLegalCard(card)) {
+      return false;
+    }
+    auto player = this->GetActivePlayer();
+    if (this->mDeck.PlayCard(card) && player.value().PlayCard(card)) {
+      // Change next player state to active, and card effects
+    }
+    return true;
+  }
+
+  bool DrawCore::IsLegalCard(game::Card card) {
+    auto player = this->GetActivePlayer();
+    if (!player) {
+      return false;
+    }
+    return player.value().HasCard(card);
+  }
+
+  std::optional<game::Player> DrawCore::GetActivePlayer() {
+    if (this->mPlayers.size() == 0) {
+      return std::nullopt;
+    }
+    for (auto player : this->mPlayers) {
+      if (player.GetTurnState() == turn::State::ACTIVE) {
+        return player;
+      }
+    }
+    return std::nullopt;
+  }
 };
 

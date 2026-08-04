@@ -1,7 +1,6 @@
 #ifndef GAME_ENGINE_HPP
 #define GAME_ENGINE_HPP
 
-#include "TurnState.hpp"
 #include "Card.hpp"
 #include "Deck.hpp"
 #include "Player.hpp"
@@ -14,9 +13,11 @@ namespace game {
 
       bool DealCards(unsigned int minimumDeckSize);
 
-      void PlayCard(Card card);
+      bool PlayCard(Card card);
 
-      unsigned int GetPlayerTurn();
+      bool IsLegalCard(Card card);
+
+      std::optional<Player> GetActivePlayer();
 
       void AddPlayer(Player player);
 
@@ -27,8 +28,9 @@ namespace game {
       void GenerateGame();
 
     private:
-      turn::TurnState mPlayerTurn;
       Deck mDeck;
+      bool mStacking = false;
+      int mStackCount = 0;
       std::vector<Player> mPlayers;
   };
 
