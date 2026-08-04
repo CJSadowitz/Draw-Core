@@ -2,6 +2,7 @@
 #define PLAYER_HPP
 
 #include "Card.hpp"
+#include "TurnState.hpp"
 #include <vector>
 #include <optional>
 
@@ -24,11 +25,11 @@ class Player {
       void AddCard(Card card);
 
       /**
-       * @brief finds the top most playable card of the specified type
+       * @brief removes and returns the top most playable card
        *
        * @return returns the card or null if there is none
        */
-      std::optional<Card> PlayCard(CardType type);
+      std::optional<Card> PlayCard(Card pCard);
 
       /**
        * @brief returns the array of cards of specified type
@@ -45,6 +46,7 @@ class Player {
       std::optional<std::vector<Card>> GetCards();
 
     private:
+      turn::TurnState mState;
       std::vector<Card> mCards;
       // How can I not hardcode the han to have certain card types?
       std::vector<Card> mRedCards;
