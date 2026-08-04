@@ -9,8 +9,6 @@ namespace game {
     this->mDrawPile = cards;
   }
 
-  Deck::~Deck() {}
-
   void Deck::ShuffleCards() {
     auto shuffledCards = std::vector<Card>();
 
@@ -104,4 +102,24 @@ namespace game {
     cards.clear();
     return true;
   }
+
+  bool Deck::PlayCard(game::Card card) {
+    if (!IsLegalCard(card)) {
+      return false;
+    }
+    this->mDiscardPile.emplace_back(card);
+    return true;
+  }
+
+  bool Deck::IsLegalCard(Card card) {
+    if (this->mDiscardPile.size() == 0) {
+      return false;
+    }
+    auto topCard = this->mDiscardPile.back();
+    if (card.type == topCard.type || card.value == topCard.value || card.type == game::CardType::WILD) {
+      return true;
+    }
+    return false;
+  }
+
 };

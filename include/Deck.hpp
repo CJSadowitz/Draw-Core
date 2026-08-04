@@ -18,8 +18,6 @@ namespace game {
        */
       Deck(std::vector<Card> cards, unsigned int seed);
 
-      ~Deck();
-
       /**
        * @brief Returns all drawn cards until value or type matches top discard
        *
@@ -53,6 +51,20 @@ namespace game {
        * @return successful reset; on false means there is only 1 card in discard and cannot be put into draw pile
        */
       bool ResetDiscardPile();
+
+      /**
+       * @brief Adds played card to the top of the discard pile
+       *
+       * @return successful card played
+       */
+      bool PlayCard(Card card);
+
+      /**
+       * @brief Checks to see if the card is allowed to be played on top of the discard pile
+       *
+       * @return allowed or not allowed 
+       */
+      bool IsLegalCard(Card card);
 
       std::vector<Card> GetDrawPile() {
         return this->mDrawPile;
