@@ -41,7 +41,7 @@ TEST_CASE("Add one of each card type", "[addCards]") {
 TEST_CASE("Play card with no card of given type", "[playCard]") {
   game::Player p = game::Player(std::vector<game::Card>());
   REQUIRE(!p.GetCards());
-  REQUIRE(!p.PlayCard(game::CardType::RED));
+  REQUIRE(!p.PlayCard(game::Card{}));
 }
 
 TEST_CASE("Play card with one card of the given type", "[playCard]") {
@@ -50,7 +50,7 @@ TEST_CASE("Play card with one card of the given type", "[playCard]") {
   game::Player p = game::Player(cards);
   REQUIRE(p.GetCards());
   REQUIRE(p.GetCards(game::CardType::RED));
-  REQUIRE(p.PlayCard(game::CardType::RED));
+  REQUIRE(p.PlayCard(game::Card{game::CardType::RED, game::CardValue::ZERO}));
   REQUIRE(!p.GetCards());
   REQUIRE(!p.GetCards(game::CardType::RED));
 }

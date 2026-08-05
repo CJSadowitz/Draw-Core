@@ -3,6 +3,7 @@
 
 #include <random>
 #include "Card.hpp"
+#include <optional>
 
 namespace game {
   class Deck {
@@ -17,14 +18,19 @@ namespace game {
        */
       Deck(std::vector<Card> cards, unsigned int seed);
 
-      ~Deck();
-
       /**
        * @brief Returns all drawn cards until value or type matches top discard
        *
-       * @return nullptr for inability to get a playable card, otherwise returns array of cards
+       * @return nullopt for inability to get a playable card, otherwise returns array of cards
        */
-      bool DrawCards(std::vector<Card>& drawnCards);
+      std::optional<std::vector<Card>> DrawCards();
+
+      /**
+       * @brief Draw a single card: Useful for setting inital player hand
+       *
+       * @return nullopt for no cards to draw, otherwise returns the single card
+       */
+      std::optional<Card> DrawCard();
 
       /**
        * @brief On card played, resign or loss, add cards to end of draw pile and shuffle
@@ -45,6 +51,20 @@ namespace game {
        * @return successful reset; on false means there is only 1 card in discard and cannot be put into draw pile
        */
       bool ResetDiscardPile();
+
+      /**
+       * @brief Adds played card to the top of the discard pile
+       *
+       * @return successful card played
+       */
+      bool PlayCard(Card card);
+
+      /**
+       * @brief Checks to see if the card is allowed to be played on top of the discard pile
+       *
+       * @return allowed or not allowed 
+       */
+      bool IsLegalCard(Card card);
 
       std::vector<Card> GetDrawPile() {
         return this->mDrawPile;

@@ -16,9 +16,9 @@ namespace game {
     return true;
   }
 
-  std::optional<Card> Player::PlayCard(CardType type) {
+  std::optional<Card> Player::PlayCard(Card pCard) {
     std::optional<Card> card = std::nullopt;
-    switch (type) {
+    switch (pCard.type) {
       case(CardType::RED):
         if (this->mRedCards.size() > 0) {
           card = this->mRedCards.back();
@@ -52,6 +52,7 @@ namespace game {
     }
     // Reconstruct mCards cannot remove single instance due to index being unknown and possible duplicates
     if (card != std::nullopt) {
+      this->mState.Change(card.value().type);
       this->mCards = std::vector<Card>();
       // Has to be a better way to do this
       for (auto rCard : this->mRedCards)    { this->mCards.emplace_back(rCard); }
@@ -120,6 +121,17 @@ namespace game {
         break;
     }
     this->mCards.emplace_back(card);
+  }
+
+  bool Player::HasCard(Card card) {
+    auto cards = this->GetCards(card.type);
+    if (!cards) {
+      return false;
+    }
+    if (cards.value().back().value == card.value && cards.value().back().type == card.type) {
+      return true;
+    }
+    return false;
   }
 
 };
