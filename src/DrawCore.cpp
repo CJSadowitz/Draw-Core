@@ -12,9 +12,9 @@ namespace game {
     if (this->mDeck.GetDrawPile().size() == 0 || this->mPlayers.size() <= 1) {
       return false;
     }
-    // Hardcoded alg for classic draw game
     size_t cardAmount = this->mDeck.GetDrawPile().size();
     unsigned int playerIndex = 0;
+    this->mDeck.ShuffleCards();
     do {
       auto card = this->mDeck.DrawCard();
       if (card) {
@@ -24,9 +24,9 @@ namespace game {
       else {
         break;
       }
-      playerIndex += 1 % this->mPlayers.size();
+      playerIndex = (playerIndex + 1) % (this->mPlayers.size() - 1);
     } while(cardAmount > minimumDeckSize);
-    return true;
+    return this->mDeck.ResetDiscardPile();
   }
 
   bool DrawCore::MakeMove(Move playerMove) {
@@ -37,7 +37,7 @@ namespace game {
           if (!player) {
             return false;
           }
-          this->RemovePlayer(player.value());
+          this->RemovePlayer();
           return false;
         }
           // update next player turn
@@ -52,11 +52,20 @@ namespace game {
         if (!player) {
           return false;
         }
-        this->RemovePlayer(player.value());
+        this->RemovePlayer();
         // Update next player turn
         break;
     }
     return true;
+  }
+
+  void DrawCore::RemovePlayer() {
+    auto newPlayers = std::vector<Player>();
+    for (auto player : this->mPlayers) {
+      if (player.GetTurnState() != turn::State::ACTIVE) {
+        newPlayers.emplace_back(player);
+      }
+    }
   }
 
   bool DrawCore::PlayDraw() {
