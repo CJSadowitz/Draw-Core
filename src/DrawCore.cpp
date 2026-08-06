@@ -47,6 +47,10 @@ namespace game {
           // Update next player turn + process wild or stacking
         }
         break;
+      case(MoveType::CHOOSE_COLOR):
+        // Expects card of not wild with chng color attrib
+        this->mDeck.PlayCard(playerMove.card);
+        break;
       case(MoveType::RESIGN):
         auto player = this->GetActivePlayer();
         if (!player) {
@@ -84,6 +88,7 @@ namespace game {
     }
     auto player = this->GetActivePlayer();
     // Card was played and added to the deck and removed from player hand
+    // PlayCard should always be true because of the IsLegalCard Check
     if (this->mDeck.PlayCard(card) && player.value().PlayCard(card)) {
       return true;
     }

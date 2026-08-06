@@ -28,3 +28,7 @@ TEST_CASE("Dealing full deck to 8 players", "[dealCards]") {
   REQUIRE(game.DealCards(20));
 }
 
+TEST_CASE("", "" ) {
+
+}
+

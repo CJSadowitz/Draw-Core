@@ -14,7 +14,6 @@ namespace game {
        * @param cards Pointer to the cards
        * @param size  Number of cards at specified location
        * @param seed  Per game instance seed value
-       *
        */
       Deck(std::vector<Card> cards, unsigned int seed);
 
@@ -62,9 +61,16 @@ namespace game {
       /**
        * @brief Checks to see if the card is allowed to be played on top of the discard pile
        *
-       * @return allowed or not allowed 
+       * @return fails if type or value doesn't match top of discard
        */
       bool IsLegalCard(Card card);
+
+      /**
+       * @brief places a temp card on discard pile that swaps the color
+       *
+       * @return fails if top discard is not a wild card
+       */
+      bool ChangeColor(Card card);
 
       std::vector<Card> GetDrawPile() {
         return this->mDrawPile;
