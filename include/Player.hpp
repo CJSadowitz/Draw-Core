@@ -9,7 +9,7 @@
 namespace game {
 class Player {
     public:
-      Player(std::vector<Card> cards);
+      Player(std::vector<Card> cards, int id);
 
       /**
        * @brief After a draw move, cards need to be added to hand
@@ -62,6 +62,7 @@ class Player {
       bool HasCard(Card card);
 
     private:
+      int mId;
       turn::TurnState mState;
       std::vector<Card> mCards;
       // How can I not hardcode the han to have certain card types?

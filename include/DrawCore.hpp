@@ -18,7 +18,7 @@ namespace game {
   };
   struct Move {
     MoveType type;
-    Card card;
+    std::optional<Card> card;
   };
   class DrawCore {
     public:
@@ -55,6 +55,24 @@ namespace game {
        */
       void GenerateGame();
 
+      std::optional<std::vector<Player>> GetPlayers() {
+        if (this->mPlayers.size() > 0) {
+          return this->mPlayers;
+        }
+        return std::nullopt;
+      }
+
+      Deck GetDeck() {
+        return this->mDeck;
+      }
+
+      std::optional<std::vector<int>> GetWinners() {
+        return this->mWinners;
+      }
+
+      std::optional<std::vector<int>> GetLosers() {
+        return this->mLosers;
+      }
 
     private:
       /**
@@ -97,6 +115,8 @@ namespace game {
       int mStackCount = 0;
       TurnDirection mDirection = FORWARD;
       std::vector<Player> mPlayers;
+      std::vector<int> mWinners = std::vector<int>();
+      std::vector<int> mLosers  = std::vector<int>();
   };
 
 };
