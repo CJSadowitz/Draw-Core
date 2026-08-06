@@ -61,6 +61,13 @@ class Player {
        */
       bool HasCard(Card card);
 
+      /**
+       *
+       */
+      void SetActiveTurn() {
+        this->mState.OnEnter();
+      }
+
     private:
       int mId;
       turn::TurnState mState;
