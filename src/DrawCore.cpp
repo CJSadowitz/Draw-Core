@@ -1,4 +1,5 @@
 #include "DrawCore.hpp"
+#include <iostream>
 #include <algorithm>
 #include <iterator>
 
@@ -17,20 +18,17 @@ namespace game {
     if (this->mDeck.GetDrawPile().size() == 0 || this->mPlayers.size() <= 1) {
       return false;
     }
-    size_t cardAmount = this->mDeck.GetDrawPile().size();
     unsigned int playerIndex = 0;
     this->mDeck.ShuffleCards();
-    do {
+    for (int i = this->mDeck.GetDrawPile().size(); i > minimumDeckSize; i--) {
       auto card = this->mDeck.DrawCard();
-      if (card) {
-        this->mPlayers[playerIndex].AddCard(card.value());
-        cardAmount--;
-      }
-      else {
+      if (!card) {
+        std::cout << "Uh\n";
         break;
       }
-      playerIndex = (playerIndex + 1) % (this->mPlayers.size() - 1);
-    } while(cardAmount > minimumDeckSize);
+      this->mPlayers[playerIndex].AddCard(card.value());
+      playerIndex = (playerIndex + 1) % this->mPlayers.size();
+    }
     return this->mDeck.ResetDiscardPile();
   }
 
@@ -45,7 +43,7 @@ namespace game {
           this->RemovePlayer();
           return false;
         }
-          // update next player turn
+        this->UpdateTurn(turn::TurnType::DRAW);
         break;
       case(MoveType::PLAY_CARD):
         if (!playerMove.card) {
@@ -58,47 +56,17 @@ namespace game {
         if (this->PlayCard(playerMove.card.value()) && this->mDeck.PlayCard(playerMove.card.value())) {
           // wild
           if (playerMove.card.value().type == CardType::WILD) {
-            // Wow a 'well' built function already handles it!
-            // Handle plus 4
-            return true;
+            this->UpdateTurn(turn::TurnType::CHANGECOLOR);
           }
-          //
-          // plus 2
           if (playerMove.card.value().value == CardValue::PLUS_TWO) {
-            auto activeIt = std::find(this->mPlayers.begin(), this->mPlayers.end(), player.value());
-            int activeIndex = std::distance(this->mPlayers.begin(), activeIt);
-            int nextActiveIndex = (activeIndex + 2 * this->mDirection) % this->mPlayers.size();
-            auto nextActivePlayer = this->mPlayers[nextActiveIndex];
-
-            nextActivePlayer.SetState(turn::State::ACTIVE);
-            this->mPlayers[activeIndex] = player.value();
-            this->mPlayers[nextActiveIndex] = nextActivePlayer;
-            return true;
+            this->UpdateTurn(turn::TurnType::STACK);
           }
-          // reverse
           if (playerMove.card.value().value == CardValue::REVERSE) {
-            this->mDirection = static_cast<turn::TurnDirection>(this->mDirection * -1);
-            // update player turn
-            auto activeIt = std::find(this->mPlayers.begin(), this->mPlayers.end(), player.value());
-            int activeIndex = std::distance(this->mPlayers.begin(), activeIt);
-            int nextActiveIndex = (activeIndex + this->mDirection) % this->mPlayers.size();
-            auto nextActivePlayer = this->mPlayers[nextActiveIndex];
-
-            nextActivePlayer.SetState(turn::State::ACTIVE);
-            this->mPlayers[activeIndex] = player.value();
-            this->mPlayers[nextActiveIndex] = nextActivePlayer;
+            this->UpdateTurn(turn::TurnType::REVERSE);
             return true;
           }
-          // skip
           if (playerMove.card.value().value == CardValue::SKIP) {
-            auto activeIt = std::find(this->mPlayers.begin(), this->mPlayers.end(), player.value());
-            int activeIndex = std::distance(this->mPlayers.begin(), activeIt);
-            int nextActiveIndex = (activeIndex + 2 * this->mDirection) % this->mPlayers.size();
-            auto nextActivePlayer = this->mPlayers[nextActiveIndex];
-
-            nextActivePlayer.SetState(turn::State::ACTIVE);
-            this->mPlayers[activeIndex] = player.value();
-            this->mPlayers[nextActiveIndex] = nextActivePlayer;
+            this->UpdateTurn(turn::TurnType::SKIP);
             return true;
           }
           // default regular card
@@ -196,17 +164,42 @@ namespace game {
     return std::nullopt;
   }
 
-  void UpdateTurn(turn::TurnType type) {
+  void DrawCore::UpdateTurn(turn::TurnType type) {
+    auto player = this->GetActivePlayer();
+    if (!player) {
+      return;
+    }
+    int dir = 0;
     switch (type) {
       case (turn::TurnType::DEFAULT):
+        dir = this->mDirection;
         break;
       case (turn::TurnType::REVERSE):
+        this->mDirection = static_cast<turn::TurnDirection>(this->mDirection * -1);
+        dir = this->mDirection;
         break;
       case (turn::TurnType::SKIP):
+        dir = this->mDirection * 2;
         break;
-      case (turn::TurnType::PLUS_X):
-        break;
+      case (turn::TurnType::CHANGECOLOR):
+        player.value().SetState(turn::State::CHANGE_COLOR);
+        return;
+      case (turn::TurnType::DRAW):
+        player.value().SetState(turn::State::PLAYDRAW);
+        return;
+      case (turn::TurnType::STACK):
+        player.value().SetState(turn::State::PLAYSTACK);
+        return;
     }
+
+    auto activeIt = std::find(this->mPlayers.begin(), this->mPlayers.end(), player.value());
+    int activeIndex = std::distance(this->mPlayers.begin(), activeIt);
+    int nextActiveIndex = (activeIndex + dir) % this->mPlayers.size();
+    auto nextActivePlayer = this->mPlayers[nextActiveIndex];
+    player.value().SetState(turn::State::INACTIVE);
+    nextActivePlayer.SetState(turn::State::ACTIVE);
+    this->mPlayers[activeIndex] = player.value();
+    this->mPlayers[nextActiveIndex] = nextActivePlayer;
   }
 };
 

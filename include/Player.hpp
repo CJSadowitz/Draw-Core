@@ -10,7 +10,9 @@ namespace game {
     enum State {
       ACTIVE,
       INACTIVE,
-      CHANGE_COLOR
+      CHANGE_COLOR,
+      PLAYDRAW,
+      PLAYSTACK
     };
   }
   class Player {

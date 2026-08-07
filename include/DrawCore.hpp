@@ -15,7 +15,9 @@ namespace game {
       DEFAULT,
       SKIP,
       REVERSE,
-      PLUS_X
+      CHANGECOLOR,
+      DRAW,
+      STACK
     };
   };
   enum MoveType {
