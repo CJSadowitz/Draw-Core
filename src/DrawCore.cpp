@@ -1,4 +1,6 @@
 #include "DrawCore.hpp"
+#include <algorithm>
+#include <iterator>
 #include <iostream>
 
 namespace game {
@@ -64,9 +66,21 @@ namespace game {
         if (!player) {
           return false;
         }
+        // Find the location of the active player
+        auto activeIt = std::find(this->mPlayers.begin(), this->mPlayers.end(), player.value());
+        int activeIndex = std::distance(this->mPlayers.begin(), activeIt);
+        int nextActiveIndex = (activeIndex + this->mDirection) % this->mPlayers.size();
+        auto nextActivePlayer = this->mPlayers[(activeIndex + this->mDirection - 1) % this->mPlayers.size()];
+
         this->RemovePlayer();
+
+        // After removing from the list, update new player to active and replace them in the list
+        auto nextActiveIt = std::find(this->mPlayers.begin(), this->mPlayers.end(), nextActivePlayer);
+        nextActiveIndex = std::distance(this->mPlayers.begin(), nextActiveIt);
+        nextActivePlayer.SetActiveTurn();
+        this->mPlayers[nextActiveIndex] = nextActivePlayer;
+
         this->mLosers.emplace_back(player.value().GetId());
-        // Update next player turn
         break;
     }
     return true;

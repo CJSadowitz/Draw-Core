@@ -7,8 +7,8 @@
 
 namespace game {
   enum TurnDirection {
-    FORWARD,
-    BACKWARD
+    BACKWARD = -1,
+    FORWARD = 1
   };
   enum MoveType {
     DRAW,

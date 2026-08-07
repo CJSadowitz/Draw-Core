@@ -72,6 +72,10 @@ class Player {
         return this->mId;
       }
 
+      bool operator==(const Player& other) const {
+        return this->mId == other.mId;
+      }
+
     private:
       int mId;
       turn::TurnState mState;
