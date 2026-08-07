@@ -43,7 +43,7 @@ TEST_CASE("Resign", "[makeMove]" ) {
   auto players = game.GetPlayers();
   REQUIRE(players);
   REQUIRE(players.value().size() == 1);
-  REQUIRE(players.value().end()->GetTurnState() == game::turn::State::ACTIVE);
+  REQUIRE(players.value().back().GetState() == game::turn::State::ACTIVE);
   REQUIRE(game.GetLosers());
   REQUIRE(game.GetLosers().value().size() > 0);
   REQUIRE(game.GetLosers().value()[0] == 0);
@@ -65,7 +65,7 @@ TEST_CASE("Play Card Reverse", "[makeMove]" ) {
   REQUIRE(game.MakeMove(move));
   auto players = game.GetPlayers();
   REQUIRE(players);
-  REQUIRE(players.value().back().GetTurnState() == game::turn::State::ACTIVE);
+  REQUIRE(players.value().back().GetState() == game::turn::State::ACTIVE);
 }
 
 TEST_CASE("Play Card Skip", "[makeMove]" ) {
@@ -84,7 +84,7 @@ TEST_CASE("Play Card Skip", "[makeMove]" ) {
   REQUIRE(game.MakeMove(move));
   auto players = game.GetPlayers();
   REQUIRE(players);
-  REQUIRE(players.value()[2].GetTurnState() == game::turn::State::ACTIVE);
+  REQUIRE(players.value()[2].GetState() == game::turn::State::ACTIVE);
 }
 
 TEST_CASE("Play Card Regular Card", "[makeMove]" ) {
@@ -103,7 +103,7 @@ TEST_CASE("Play Card Regular Card", "[makeMove]" ) {
   REQUIRE(game.MakeMove(move));
   auto players = game.GetPlayers();
   REQUIRE(players);
-  REQUIRE(players.value()[1].GetTurnState() == game::turn::State::ACTIVE);
+  REQUIRE(players.value()[1].GetState() == game::turn::State::ACTIVE);
 }
 
 TEST_CASE("Play Card Reverse, Regular", "[makeMove]" ) {

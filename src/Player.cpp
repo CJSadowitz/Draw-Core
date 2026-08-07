@@ -53,7 +53,6 @@ namespace game {
     }
     // Reconstruct mCards cannot remove single instance due to index being unknown and possible duplicates
     if (card != std::nullopt) {
-      this->mState.Change(card.value().type);
       this->mCards = std::vector<Card>();
       // Has to be a better way to do this
       for (auto rCard : this->mRedCards)    { this->mCards.emplace_back(rCard); }

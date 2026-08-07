@@ -6,9 +6,17 @@
 #include "Player.hpp"
 
 namespace game {
-  enum TurnDirection {
-    BACKWARD = -1,
-    FORWARD = 1
+  namespace turn {
+    enum TurnDirection {
+      BACKWARD = -1,
+      FORWARD = 1
+    };
+    enum TurnType {
+      DEFAULT,
+      SKIP,
+      REVERSE,
+      PLUS_X
+    };
   };
   enum MoveType {
     DRAW,
@@ -110,10 +118,12 @@ namespace game {
        */
       void RemovePlayer();
 
+      void UpdateTurn(turn::TurnType type);
+
       Deck mDeck;
       bool mStacking = false;
       int mStackCount = 0;
-      TurnDirection mDirection = FORWARD;
+      turn::TurnDirection mDirection = turn::FORWARD;
       std::vector<Player> mPlayers;
       std::vector<int> mWinners = std::vector<int>();
       std::vector<int> mLosers  = std::vector<int>();

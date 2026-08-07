@@ -1,7 +1,6 @@
 #include "DrawCore.hpp"
 #include <algorithm>
 #include <iterator>
-#include <iostream>
 
 namespace game {
   DrawCore::DrawCore(unsigned int seed, size_t playerCount, std::vector<Card> cards) :
@@ -10,7 +9,7 @@ namespace game {
       this->mPlayers.emplace_back(Player(std::vector<game::Card>(), i));
     }
     if (playerCount > 0) {
-      this->mPlayers[0].SetActiveTurn();
+      this->mPlayers[0].SetState(turn::State::ACTIVE);
     }
   }
 
@@ -71,21 +70,21 @@ namespace game {
             int nextActiveIndex = (activeIndex + 2 * this->mDirection) % this->mPlayers.size();
             auto nextActivePlayer = this->mPlayers[nextActiveIndex];
 
-            nextActivePlayer.SetActiveTurn();
+            nextActivePlayer.SetState(turn::State::ACTIVE);
             this->mPlayers[activeIndex] = player.value();
             this->mPlayers[nextActiveIndex] = nextActivePlayer;
             return true;
           }
           // reverse
           if (playerMove.card.value().value == CardValue::REVERSE) {
-            this->mDirection = static_cast<TurnDirection>(this->mDirection * -1);
+            this->mDirection = static_cast<turn::TurnDirection>(this->mDirection * -1);
             // update player turn
             auto activeIt = std::find(this->mPlayers.begin(), this->mPlayers.end(), player.value());
             int activeIndex = std::distance(this->mPlayers.begin(), activeIt);
             int nextActiveIndex = (activeIndex + this->mDirection) % this->mPlayers.size();
             auto nextActivePlayer = this->mPlayers[nextActiveIndex];
 
-            nextActivePlayer.SetActiveTurn();
+            nextActivePlayer.SetState(turn::State::ACTIVE);
             this->mPlayers[activeIndex] = player.value();
             this->mPlayers[nextActiveIndex] = nextActivePlayer;
             return true;
@@ -97,7 +96,7 @@ namespace game {
             int nextActiveIndex = (activeIndex + 2 * this->mDirection) % this->mPlayers.size();
             auto nextActivePlayer = this->mPlayers[nextActiveIndex];
 
-            nextActivePlayer.SetActiveTurn();
+            nextActivePlayer.SetState(turn::State::ACTIVE);
             this->mPlayers[activeIndex] = player.value();
             this->mPlayers[nextActiveIndex] = nextActivePlayer;
             return true;
@@ -108,7 +107,7 @@ namespace game {
           int nextActiveIndex = (activeIndex + this->mDirection) % this->mPlayers.size();
           auto nextActivePlayer = this->mPlayers[nextActiveIndex];
 
-          nextActivePlayer.SetActiveTurn();
+          nextActivePlayer.SetState(turn::State::ACTIVE);
           this->mPlayers[activeIndex] = player.value();
           this->mPlayers[nextActiveIndex] = nextActivePlayer;
           return true;
@@ -135,7 +134,7 @@ namespace game {
         // After removing from the list, update new player to active and replace them in the list
         auto nextActiveIt = std::find(this->mPlayers.begin(), this->mPlayers.end(), nextActivePlayer);
         nextActiveIndex = std::distance(this->mPlayers.begin(), nextActiveIt);
-        nextActivePlayer.SetActiveTurn();
+        nextActivePlayer.SetState(turn::State::ACTIVE);
         this->mPlayers[nextActiveIndex] = nextActivePlayer;
 
         this->mLosers.emplace_back(player.value().GetId());
@@ -147,7 +146,7 @@ namespace game {
   void DrawCore::RemovePlayer() {
     auto newPlayers = std::vector<Player>();
     for (auto player : this->mPlayers) {
-      if (player.GetTurnState() != turn::State::ACTIVE) {
+      if (player.GetState() != turn::State::ACTIVE) {
         newPlayers.emplace_back(player);
       }
     }
@@ -190,11 +189,24 @@ namespace game {
       return std::nullopt;
     }
     for (auto player : this->mPlayers) {
-      if (player.GetTurnState() == turn::State::ACTIVE) {
+      if (player.GetState() == turn::State::ACTIVE) {
         return player;
       }
     }
     return std::nullopt;
+  }
+
+  void UpdateTurn(turn::TurnType type) {
+    switch (type) {
+      case (turn::TurnType::DEFAULT):
+        break;
+      case (turn::TurnType::REVERSE):
+        break;
+      case (turn::TurnType::SKIP):
+        break;
+      case (turn::TurnType::PLUS_X):
+        break;
+    }
   }
 };
 

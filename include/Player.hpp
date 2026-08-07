@@ -2,12 +2,18 @@
 #define PLAYER_HPP
 
 #include "Card.hpp"
-#include "TurnState.hpp"
 #include <vector>
 #include <optional>
 
 namespace game {
-class Player {
+  namespace turn {
+    enum State {
+      ACTIVE,
+      INACTIVE,
+      CHANGE_COLOR
+    };
+  }
+  class Player {
     public:
       Player(std::vector<Card> cards, int id);
 
@@ -46,15 +52,6 @@ class Player {
       std::optional<std::vector<Card>> GetCards();
 
       /**
-       * @brief returns the state of the player
-       *
-       * @return player state
-       */
-      turn::State GetTurnState() {
-        return this->mState.GetState();
-      }
-
-      /**
        * @brief determines if the passed in card is on the top of any pile
        *
        * @return true if the card exists
@@ -64,16 +61,12 @@ class Player {
       /**
        *
        */
-      void SetActiveTurn() {
-        this->mState.OnEnter();
+      void SetState(turn::State state) {
+        this->mState = state;
       }
 
-      void SetInactiveTurn() {
-        this->mState.OnExit();
-      }
-
-      void ChangeTurn(CardType type) {
-        this->mState.Change(type);
+      turn::State GetState() {
+        return this->mState;
       }
 
       int GetId() {
@@ -86,7 +79,7 @@ class Player {
 
     private:
       int mId;
-      turn::TurnState mState;
+      turn::State mState;
       std::vector<Card> mCards;
       // How can I not hardcode the han to have certain card types?
       std::vector<Card> mRedCards;
