@@ -1,6 +1,5 @@
 #include "DrawCore.hpp"
 #include <catch2/catch_test_macros.hpp>
-#include <iostream>
 
 std::vector<game::Card> GenerateDeck() {
   auto cards = std::vector<game::Card>();
@@ -119,25 +118,8 @@ TEST_CASE("Play Card Regular, Reverse, Regular", "[makeMove]" ) {
   cards.emplace_back(game::Card{game::CardType::RED, game::CardValue::ZERO});
   game::DrawCore game = game::DrawCore(seed, playerCount, cards);
   REQUIRE(game.DealCards(2));
- 
-  auto players = game.GetPlayers().value();
-  for (auto player : players) {
-    auto playerCards = player.GetCards();
-    if(!playerCards) {
-      std::cout << "WTF!\n";
-    }
-    std::cout << "Player n\n";
-    for (auto card : playerCards.value()) {
-      std::cout << card.type << ' ' << card.value << '\n';
-    }
-  }
-  
   REQUIRE(game.MakeMove(game::Move{game::MoveType::PLAY_CARD, game::Card{game::CardType::RED, game::CardValue::ZERO}}));
   REQUIRE(game.GetPlayers().value()[1].GetState() == game::turn::ACTIVE);
-  auto playerCards = game.GetPlayers().value()[1].GetCards();
-  for (auto card : playerCards.value()) {
-      std::cout << card.type << ' ' << card.value << '\n';
-  }
   REQUIRE(game.MakeMove(game::Move{game::MoveType::PLAY_CARD, game::Card{game::CardType::RED, game::CardValue::REVERSE}}));
 }
 

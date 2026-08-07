@@ -1,5 +1,4 @@
 #include "DrawCore.hpp"
-#include <iostream>
 #include <algorithm>
 #include <iterator>
 
@@ -23,7 +22,6 @@ namespace game {
     for (int i = this->mDeck.GetDrawPile().size(); i > minimumDeckSize; i--) {
       auto card = this->mDeck.DrawCard();
       if (!card) {
-        std::cout << "Uh\n";
         break;
       }
       this->mPlayers[playerIndex].AddCard(card.value());
