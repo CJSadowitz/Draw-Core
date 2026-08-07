@@ -62,10 +62,10 @@ namespace game {
       case(MoveType::RESIGN):
         auto player = this->GetActivePlayer();
         if (!player) {
-          std::cout << "WEE\n";
           return false;
         }
         this->RemovePlayer();
+        this->mLosers.emplace_back(player.value().GetId());
         // Update next player turn
         break;
     }
@@ -115,7 +115,6 @@ namespace game {
 
   std::optional<game::Player> DrawCore::GetActivePlayer() {
     if (this->mPlayers.size() == 0) {
-      std::cout << "a\n";
       return std::nullopt;
     }
     for (auto player : this->mPlayers) {
@@ -123,7 +122,6 @@ namespace game {
         return player;
       }
     }
-    std::cout << "b\n";
     return std::nullopt;
   }
 };

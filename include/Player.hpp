@@ -68,6 +68,10 @@ class Player {
         this->mState.OnEnter();
       }
 
+      int GetId() {
+        return this->mId;
+      }
+
     private:
       int mId;
       turn::TurnState mState;
