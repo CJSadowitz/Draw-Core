@@ -49,20 +49,79 @@ TEST_CASE("Resign", "[makeMove]" ) {
   REQUIRE(game.GetLosers().value()[0] == 0);
 }
 
-TEST_CASE("Play Card", "[makeMove]" ) {
+TEST_CASE("Play Card Reverse", "[makeMove]" ) {
   unsigned int seed = 1;
-  size_t playerCount = 2;
+  size_t playerCount = 4;
   auto cards = std::vector<game::Card>();
-  cards.emplace_back(game::Card{game::CardType::RED, game::CardValue::ZERO});
-  cards.emplace_back(game::Card{game::CardType::RED, game::CardValue::ONE});
-  cards.emplace_back(game::Card{game::CardType::RED, game::CardValue::ZERO});
-  cards.emplace_back(game::Card{game::CardType::RED, game::CardValue::ONE});
+  cards.emplace_back(game::Card{game::CardType::RED, game::CardValue::REVERSE});
+  cards.emplace_back(game::Card{game::CardType::RED, game::CardValue::REVERSE});
+  cards.emplace_back(game::Card{game::CardType::RED, game::CardValue::REVERSE});
+  cards.emplace_back(game::Card{game::CardType::RED, game::CardValue::REVERSE});
+  cards.emplace_back(game::Card{game::CardType::RED, game::CardValue::REVERSE});
+  cards.emplace_back(game::Card{game::CardType::RED, game::CardValue::REVERSE});
   game::DrawCore game = game::DrawCore(seed, playerCount, cards);
   REQUIRE(game.DealCards(2));
-  auto move = game::Move{game::MoveType::PLAY_CARD, cards[0]};
+  auto move = game::Move{game::MoveType::PLAY_CARD, cards[1]};
   REQUIRE(game.MakeMove(move));
   auto players = game.GetPlayers();
   REQUIRE(players);
-  REQUIRE(players.value().end()->GetTurnState() == game::turn::State::ACTIVE);
+  REQUIRE(players.value().back().GetTurnState() == game::turn::State::ACTIVE);
 }
 
+TEST_CASE("Play Card Skip", "[makeMove]" ) {
+  unsigned int seed = 1;
+  size_t playerCount = 4;
+  auto cards = std::vector<game::Card>();
+  cards.emplace_back(game::Card{game::CardType::RED, game::CardValue::SKIP});
+  cards.emplace_back(game::Card{game::CardType::RED, game::CardValue::SKIP});
+  cards.emplace_back(game::Card{game::CardType::RED, game::CardValue::SKIP});
+  cards.emplace_back(game::Card{game::CardType::RED, game::CardValue::SKIP});
+  cards.emplace_back(game::Card{game::CardType::RED, game::CardValue::SKIP});
+  cards.emplace_back(game::Card{game::CardType::RED, game::CardValue::SKIP});
+  game::DrawCore game = game::DrawCore(seed, playerCount, cards);
+  REQUIRE(game.DealCards(2));
+  auto move = game::Move{game::MoveType::PLAY_CARD, cards[1]};
+  REQUIRE(game.MakeMove(move));
+  auto players = game.GetPlayers();
+  REQUIRE(players);
+  REQUIRE(players.value()[2].GetTurnState() == game::turn::State::ACTIVE);
+}
+
+TEST_CASE("Play Card Regular Card", "[makeMove]" ) {
+  unsigned int seed = 1;
+  size_t playerCount = 4;
+  auto cards = std::vector<game::Card>();
+  cards.emplace_back(game::Card{game::CardType::RED, game::CardValue::ZERO});
+  cards.emplace_back(game::Card{game::CardType::RED, game::CardValue::ZERO});
+  cards.emplace_back(game::Card{game::CardType::RED, game::CardValue::ZERO});
+  cards.emplace_back(game::Card{game::CardType::RED, game::CardValue::ZERO});
+  cards.emplace_back(game::Card{game::CardType::RED, game::CardValue::ZERO});
+  cards.emplace_back(game::Card{game::CardType::RED, game::CardValue::ZERO});
+  game::DrawCore game = game::DrawCore(seed, playerCount, cards);
+  REQUIRE(game.DealCards(2));
+  auto move = game::Move{game::MoveType::PLAY_CARD, cards[1]};
+  REQUIRE(game.MakeMove(move));
+  auto players = game.GetPlayers();
+  REQUIRE(players);
+  REQUIRE(players.value()[1].GetTurnState() == game::turn::State::ACTIVE);
+}
+
+TEST_CASE("Play Card Reverse, Regular", "[makeMove]" ) {
+  unsigned int seed = 1;
+  size_t playerCount = 4;
+  auto cards = std::vector<game::Card>();
+  cards.emplace_back(game::Card{game::CardType::RED, game::CardValue::REVERSE});
+  cards.emplace_back(game::Card{game::CardType::RED, game::CardValue::ZERO});
+  cards.emplace_back(game::Card{game::CardType::RED, game::CardValue::ZERO});
+  cards.emplace_back(game::Card{game::CardType::RED, game::CardValue::ZERO});
+  cards.emplace_back(game::Card{game::CardType::RED, game::CardValue::ZERO});
+  cards.emplace_back(game::Card{game::CardType::RED, game::CardValue::ZERO});
+  cards.emplace_back(game::Card{game::CardType::RED, game::CardValue::REVERSE});
+  cards.emplace_back(game::Card{game::CardType::RED, game::CardValue::ZERO});
+  game::DrawCore game = game::DrawCore(seed, playerCount, cards);
+  REQUIRE(game.DealCards(2));
+  REQUIRE(game.MakeMove(game::Move{game::MoveType::PLAY_CARD, cards[0]}));
+  REQUIRE(game.MakeMove(game::Move{game::MoveType::PLAY_CARD, cards[0]}));
+  REQUIRE(game.MakeMove(game::Move{game::MoveType::PLAY_CARD, cards[0]}));
+  REQUIRE(game.MakeMove(game::Move{game::MoveType::PLAY_CARD, cards[0]}));
+}

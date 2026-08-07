@@ -68,6 +68,14 @@ class Player {
         this->mState.OnEnter();
       }
 
+      void SetInactiveTurn() {
+        this->mState.OnExit();
+      }
+
+      void ChangeTurn(CardType type) {
+        this->mState.Change(type);
+      }
+
       int GetId() {
         return this->mId;
       }

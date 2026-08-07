@@ -36,22 +36,84 @@ namespace game {
   }
 
   bool DrawCore::MakeMove(Move playerMove) {
+    auto player = this->GetActivePlayer();
+    if (!player) {
+      return false;
+    }
     switch(playerMove.type) {
       case(MoveType::DRAW):
         if(!this->PlayDraw()) {
-          auto player = this->GetActivePlayer();
-          if (!player) {
-            return false;
-          }
           this->RemovePlayer();
           return false;
         }
           // update next player turn
         break;
       case(MoveType::PLAY_CARD):
-        if (playerMove.card && this->PlayCard(playerMove.card.value())) {
-          // Update next player turn + process wild or stacking
+        if (!playerMove.card) {
+          return false;
         }
+        if (!this->mDeck.IsLegalCard(playerMove.card.value()) || !this->IsLegalCard(playerMove.card.value())) {
+          return false;
+        }
+        // Already handled placement of card and removal of card from player hand
+        if (this->PlayCard(playerMove.card.value()) && this->mDeck.PlayCard(playerMove.card.value())) {
+          // wild
+          if (playerMove.card.value().type == CardType::WILD) {
+            // Wow a 'well' built function already handles it!
+            // Handle plus 4
+            return true;
+          }
+          //
+          // plus 2
+          if (playerMove.card.value().value == CardValue::PLUS_TWO) {
+            auto activeIt = std::find(this->mPlayers.begin(), this->mPlayers.end(), player.value());
+            int activeIndex = std::distance(this->mPlayers.begin(), activeIt);
+            int nextActiveIndex = (activeIndex + 2 * this->mDirection) % this->mPlayers.size();
+            auto nextActivePlayer = this->mPlayers[nextActiveIndex];
+
+            nextActivePlayer.SetActiveTurn();
+            this->mPlayers[activeIndex] = player.value();
+            this->mPlayers[nextActiveIndex] = nextActivePlayer;
+            return true;
+          }
+          // reverse
+          if (playerMove.card.value().value == CardValue::REVERSE) {
+            this->mDirection = static_cast<TurnDirection>(this->mDirection * -1);
+            // update player turn
+            auto activeIt = std::find(this->mPlayers.begin(), this->mPlayers.end(), player.value());
+            int activeIndex = std::distance(this->mPlayers.begin(), activeIt);
+            int nextActiveIndex = (activeIndex + this->mDirection) % this->mPlayers.size();
+            auto nextActivePlayer = this->mPlayers[nextActiveIndex];
+
+            nextActivePlayer.SetActiveTurn();
+            this->mPlayers[activeIndex] = player.value();
+            this->mPlayers[nextActiveIndex] = nextActivePlayer;
+            return true;
+          }
+          // skip
+          if (playerMove.card.value().value == CardValue::SKIP) {
+            auto activeIt = std::find(this->mPlayers.begin(), this->mPlayers.end(), player.value());
+            int activeIndex = std::distance(this->mPlayers.begin(), activeIt);
+            int nextActiveIndex = (activeIndex + 2 * this->mDirection) % this->mPlayers.size();
+            auto nextActivePlayer = this->mPlayers[nextActiveIndex];
+
+            nextActivePlayer.SetActiveTurn();
+            this->mPlayers[activeIndex] = player.value();
+            this->mPlayers[nextActiveIndex] = nextActivePlayer;
+            return true;
+          }
+          // default regular card
+          auto activeIt = std::find(this->mPlayers.begin(), this->mPlayers.end(), player.value());
+          int activeIndex = std::distance(this->mPlayers.begin(), activeIt);
+          int nextActiveIndex = (activeIndex + this->mDirection) % this->mPlayers.size();
+          auto nextActivePlayer = this->mPlayers[nextActiveIndex];
+
+          nextActivePlayer.SetActiveTurn();
+          this->mPlayers[activeIndex] = player.value();
+          this->mPlayers[nextActiveIndex] = nextActivePlayer;
+          return true;
+        }
+        return true;
         break;
       case(MoveType::CHOOSE_COLOR):
         // Expects card of not wild with chng color attrib
@@ -62,15 +124,11 @@ namespace game {
         this->mDeck.PlayCard(playerMove.card.value());
         break;
       case(MoveType::RESIGN):
-        auto player = this->GetActivePlayer();
-        if (!player) {
-          return false;
-        }
         // Find the location of the active player
         auto activeIt = std::find(this->mPlayers.begin(), this->mPlayers.end(), player.value());
         int activeIndex = std::distance(this->mPlayers.begin(), activeIt);
         int nextActiveIndex = (activeIndex + this->mDirection) % this->mPlayers.size();
-        auto nextActivePlayer = this->mPlayers[(activeIndex + this->mDirection - 1) % this->mPlayers.size()];
+        auto nextActivePlayer = this->mPlayers[nextActiveIndex];
 
         this->RemovePlayer();
 
