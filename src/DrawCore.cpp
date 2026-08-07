@@ -1,10 +1,14 @@
 #include "DrawCore.hpp"
+#include <iostream>
 
 namespace game {
   DrawCore::DrawCore(unsigned int seed, size_t playerCount, std::vector<Card> cards) :
       mDeck(cards, seed) {
     for (int i = 0; i < playerCount; i++) {
-      this->mPlayers.emplace_back(Player(std::vector<game::Card>()));
+      this->mPlayers.emplace_back(Player(std::vector<game::Card>(), i));
+    }
+    if (playerCount > 0) {
+      this->mPlayers[0].SetActiveTurn();
     }
   }
 
@@ -43,9 +47,17 @@ namespace game {
           // update next player turn
         break;
       case(MoveType::PLAY_CARD):
-        if (this->PlayCard(playerMove.card)) {
+        if (playerMove.card && this->PlayCard(playerMove.card.value())) {
           // Update next player turn + process wild or stacking
         }
+        break;
+      case(MoveType::CHOOSE_COLOR):
+        // Expects card of not wild with chng color attrib
+        if (!playerMove.card) {
+          return false;
+        }
+        
+        this->mDeck.PlayCard(playerMove.card.value());
         break;
       case(MoveType::RESIGN):
         auto player = this->GetActivePlayer();
@@ -53,6 +65,7 @@ namespace game {
           return false;
         }
         this->RemovePlayer();
+        this->mLosers.emplace_back(player.value().GetId());
         // Update next player turn
         break;
     }
@@ -66,6 +79,7 @@ namespace game {
         newPlayers.emplace_back(player);
       }
     }
+    this->mPlayers = newPlayers;
   }
 
   bool DrawCore::PlayDraw() {
@@ -84,6 +98,7 @@ namespace game {
     }
     auto player = this->GetActivePlayer();
     // Card was played and added to the deck and removed from player hand
+    // PlayCard should always be true because of the IsLegalCard Check
     if (this->mDeck.PlayCard(card) && player.value().PlayCard(card)) {
       return true;
     }
@@ -103,7 +118,7 @@ namespace game {
       return std::nullopt;
     }
     for (auto player : this->mPlayers) {
-      if (player.GetTurnState() != turn::State::ACTIVE) {
+      if (player.GetTurnState() == turn::State::ACTIVE) {
         return player;
       }
     }

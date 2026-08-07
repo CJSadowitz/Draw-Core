@@ -28,3 +28,41 @@ TEST_CASE("Dealing full deck to 8 players", "[dealCards]") {
   REQUIRE(game.DealCards(20));
 }
 
+TEST_CASE("Resign", "[makeMove]" ) {
+  unsigned int seed = 1;
+  size_t playerCount = 2;
+  auto cards = std::vector<game::Card>();
+  cards.emplace_back(game::Card{game::CardType::RED, game::CardValue::ZERO});
+  cards.emplace_back(game::Card{game::CardType::RED, game::CardValue::ONE});
+  cards.emplace_back(game::Card{game::CardType::RED, game::CardValue::ZERO});
+  cards.emplace_back(game::Card{game::CardType::RED, game::CardValue::ONE});
+  game::DrawCore game = game::DrawCore(seed, playerCount, cards);
+  REQUIRE(game.DealCards(2));
+  auto move = game::Move{game::MoveType::RESIGN, std::nullopt};
+  REQUIRE(game.MakeMove(move));
+  auto players = game.GetPlayers();
+  REQUIRE(players);
+  REQUIRE(players.value().size() == 1);
+  REQUIRE(players.value().end()->GetTurnState() == game::turn::State::ACTIVE);
+  REQUIRE(game.GetLosers());
+  REQUIRE(game.GetLosers().value().size() > 0);
+  REQUIRE(game.GetLosers().value()[0] == 0);
+}
+
+TEST_CASE("Play Card", "[makeMove]" ) {
+  unsigned int seed = 1;
+  size_t playerCount = 2;
+  auto cards = std::vector<game::Card>();
+  cards.emplace_back(game::Card{game::CardType::RED, game::CardValue::ZERO});
+  cards.emplace_back(game::Card{game::CardType::RED, game::CardValue::ONE});
+  cards.emplace_back(game::Card{game::CardType::RED, game::CardValue::ZERO});
+  cards.emplace_back(game::Card{game::CardType::RED, game::CardValue::ONE});
+  game::DrawCore game = game::DrawCore(seed, playerCount, cards);
+  REQUIRE(game.DealCards(2));
+  auto move = game::Move{game::MoveType::PLAY_CARD, cards[0]};
+  REQUIRE(game.MakeMove(move));
+  auto players = game.GetPlayers();
+  REQUIRE(players);
+  REQUIRE(players.value().end()->GetTurnState() == game::turn::State::ACTIVE);
+}
+
