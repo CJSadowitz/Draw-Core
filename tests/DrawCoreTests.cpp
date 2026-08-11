@@ -42,7 +42,7 @@ TEST_CASE("Resign", "[makeMove]" ) {
   auto cards = GenerateDeck();
   game::DrawCore game = game::DrawCore(seed, playerCount, cards);
   REQUIRE(game.DealCards(2));
-  auto move = game::Move{game::MoveType::RESIGN, std::nullopt};
+  auto move = game::Move{game::MoveType::RESIGN, 0, std::nullopt};
   REQUIRE(game.MakeMove(move));
   auto players = game.GetPlayers();
   REQUIRE(players);
@@ -66,7 +66,7 @@ TEST_CASE("Play Card Reverse", "[makeMove]" ) {
   cards.emplace_back(game::Card{game::CardType::RED, game::CardValue::REVERSE});
   game::DrawCore game = game::DrawCore(seed, playerCount, cards);
   REQUIRE(game.DealCards(2));
-  auto move = game::Move{game::MoveType::PLAY_CARD, cards[1]};
+  auto move = game::Move{game::MoveType::PLAY_CARD, 0, cards[1]};
   REQUIRE(game.MakeMove(move));
   auto players = game.GetPlayers();
   REQUIRE(players);
@@ -86,7 +86,7 @@ TEST_CASE("Play Card Skip", "[makeMove]" ) {
   cards.emplace_back(game::Card{game::CardType::RED, game::CardValue::SKIP});
   game::DrawCore game = game::DrawCore(seed, playerCount, cards);
   REQUIRE(game.DealCards(2));
-  auto move = game::Move{game::MoveType::PLAY_CARD, cards[1]};
+  auto move = game::Move{game::MoveType::PLAY_CARD, 0, cards[1]};
   REQUIRE(game.MakeMove(move));
   auto players = game.GetPlayers();
   REQUIRE(players);
@@ -106,7 +106,7 @@ TEST_CASE("Play Card Regular Card", "[makeMove]" ) {
   cards.emplace_back(game::Card{game::CardType::RED, game::CardValue::ZERO});
   game::DrawCore game = game::DrawCore(seed, playerCount, cards);
   REQUIRE(game.DealCards(2));
-  auto move = game::Move{game::MoveType::PLAY_CARD, cards[1]};
+  auto move = game::Move{game::MoveType::PLAY_CARD, 0, cards[1]};
   REQUIRE(game.MakeMove(move));
   auto players = game.GetPlayers();
   REQUIRE(players);
@@ -126,8 +126,8 @@ TEST_CASE("Play Card Regular, Reverse", "[makeMove]" ) {
   cards.emplace_back(game::Card{game::CardType::RED, game::CardValue::ZERO});
   game::DrawCore game = game::DrawCore(seed, playerCount, cards);
   REQUIRE(game.DealCards(2));
-  REQUIRE(game.MakeMove(game::Move{game::MoveType::PLAY_CARD, game::Card{game::CardType::RED, game::CardValue::ZERO}}));
+  REQUIRE(game.MakeMove(game::Move{game::MoveType::PLAY_CARD, 0, game::Card{game::CardType::RED, game::CardValue::ZERO}}));
   REQUIRE(game.GetPlayers().value()[1].GetState() == game::turn::ACTIVE);
-  REQUIRE(game.MakeMove(game::Move{game::MoveType::PLAY_CARD, game::Card{game::CardType::RED, game::CardValue::REVERSE}}));
+  REQUIRE(game.MakeMove(game::Move{game::MoveType::PLAY_CARD, 1, game::Card{game::CardType::RED, game::CardValue::REVERSE}}));
 }
 

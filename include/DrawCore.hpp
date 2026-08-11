@@ -28,6 +28,7 @@ namespace game {
   };
   struct Move {
     MoveType type;
+    int playerId;
     std::optional<Card> card;
   };
   class DrawCore {
@@ -118,9 +119,11 @@ namespace game {
       /**
        *  @brief when a player resigns, loses, or wins, they are removed from the game loop
        */
-      void RemovePlayer();
+      void RemovePlayer(int playerId);
 
       void UpdateTurn(turn::TurnType type);
+
+      void UpdateTurn(Card playedCard);
 
       Deck mDeck;
       bool mStacking = false;
