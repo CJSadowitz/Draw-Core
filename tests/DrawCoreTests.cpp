@@ -1,5 +1,6 @@
 #include "DrawCore.hpp"
 #include <catch2/catch_test_macros.hpp>
+#include <spdlog/spdlog.h>
 
 std::vector<game::Card> GenerateDeck() {
   auto cards = std::vector<game::Card>();
@@ -17,6 +18,7 @@ std::vector<game::Card> GenerateDeck() {
 }
 
 TEST_CASE("Dealing small deck to small playerCount", "[dealCards]") {
+  spdlog::info("[CoreTest] [dealCards]");
   unsigned int seed = 1;
   size_t playerCount = 2;
 
@@ -25,6 +27,7 @@ TEST_CASE("Dealing small deck to small playerCount", "[dealCards]") {
 }
 
 TEST_CASE("Dealing full deck to 8 players", "[dealCards]") {
+  spdlog::info("[CoreTest] [dealCards]");
   unsigned int seed = 1;
   size_t playerCount = 8;
   auto cards = GenerateDeck();
@@ -33,6 +36,7 @@ TEST_CASE("Dealing full deck to 8 players", "[dealCards]") {
 }
 
 TEST_CASE("Resign", "[makeMove]" ) {
+  spdlog::info("[CoreTest] [makeMove]");
   unsigned int seed = 1;
   size_t playerCount = 2;
   auto cards = GenerateDeck();
@@ -50,6 +54,7 @@ TEST_CASE("Resign", "[makeMove]" ) {
 }
 
 TEST_CASE("Play Card Reverse", "[makeMove]" ) {
+  spdlog::info("[CoreTest] [makeMove]");
   unsigned int seed = 1;
   size_t playerCount = 4;
   auto cards = std::vector<game::Card>();
@@ -69,6 +74,7 @@ TEST_CASE("Play Card Reverse", "[makeMove]" ) {
 }
 
 TEST_CASE("Play Card Skip", "[makeMove]" ) {
+  spdlog::info("[CoreTest] [makeMove]");
   unsigned int seed = 1;
   size_t playerCount = 4;
   auto cards = std::vector<game::Card>();
@@ -88,6 +94,7 @@ TEST_CASE("Play Card Skip", "[makeMove]" ) {
 }
 
 TEST_CASE("Play Card Regular Card", "[makeMove]" ) {
+  spdlog::info("[CoreTest] [makeMove]");
   unsigned int seed = 1;
   size_t playerCount = 4;
   auto cards = std::vector<game::Card>();
@@ -106,7 +113,8 @@ TEST_CASE("Play Card Regular Card", "[makeMove]" ) {
   REQUIRE(players.value()[1].GetState() == game::turn::State::ACTIVE);
 }
 
-TEST_CASE("Play Card Regular, Reverse, Regular", "[makeMove]" ) {
+TEST_CASE("Play Card Regular, Reverse", "[makeMove]" ) {
+  spdlog::info("[CoreTest] [makeMove]");
   unsigned int seed = 1;
   size_t playerCount = 4;
   auto cards = std::vector<game::Card>();

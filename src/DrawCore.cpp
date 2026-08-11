@@ -1,6 +1,7 @@
 #include "DrawCore.hpp"
 #include <algorithm>
 #include <iterator>
+#include <spdlog/spdlog.h>
 
 namespace game {
   DrawCore::DrawCore(unsigned int seed, size_t playerCount, std::vector<Card> cards) :
@@ -30,6 +31,9 @@ namespace game {
     return this->mDeck.ResetDiscardPile();
   }
 
+  /**
+   * All main logic is routed through this method
+   */
   bool DrawCore::MakeMove(Move playerMove) {
     auto player = this->GetActivePlayer();
     if (!player) {
@@ -48,6 +52,7 @@ namespace game {
           return false;
         }
         if (!this->mDeck.IsLegalCard(playerMove.card.value()) || !this->IsLegalCard(playerMove.card.value())) {
+          spdlog::warn("[DrawCore] [MakeMove] [PLAY_CARD] Not legal Card");
           return false;
         }
         // Already handled placement of card and removal of card from player hand
@@ -67,15 +72,7 @@ namespace game {
             this->UpdateTurn(turn::TurnType::SKIP);
             return true;
           }
-          // default regular card
-          auto activeIt = std::find(this->mPlayers.begin(), this->mPlayers.end(), player.value());
-          int activeIndex = std::distance(this->mPlayers.begin(), activeIt);
-          int nextActiveIndex = (activeIndex + this->mDirection) % this->mPlayers.size();
-          auto nextActivePlayer = this->mPlayers[nextActiveIndex];
-
-          nextActivePlayer.SetState(turn::State::ACTIVE);
-          this->mPlayers[activeIndex] = player.value();
-          this->mPlayers[nextActiveIndex] = nextActivePlayer;
+          this->UpdateTurn(turn::TurnType::DEFAULT);
           return true;
         }
         return true;

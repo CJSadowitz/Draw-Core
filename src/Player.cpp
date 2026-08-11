@@ -1,5 +1,6 @@
 #include "Player.hpp"
 #include <optional>
+#include <spdlog/spdlog.h>
 
 namespace game {
   Player::Player(std::vector<Card> cards, int id) {
@@ -19,6 +20,7 @@ namespace game {
 
   std::optional<Card> Player::PlayCard(Card pCard) {
     std::optional<Card> card = std::nullopt;
+    spdlog::info("[Player] [PlayCard] {} played: {}, {}", this->mId, (int)pCard.type, (int)pCard.value);
     switch (pCard.type) {
       case(CardType::RED):
         if (this->mRedCards.size() > 0) {
@@ -128,9 +130,11 @@ namespace game {
     if (!cards) {
       return false;
     }
-    if (cards.value().back().value == card.value && cards.value().back().type == card.type) {
+    auto topCard = cards.value().back();
+    if (topCard.value == card.value && topCard.type == card.type) {
       return true;
     }
+    spdlog::warn("[Player] [HasCard] Id: {}: {}, {} does not match {}, {}", (int)this->mId, (int)card.value, (int)card.type, (int)topCard.value, (int)topCard.type);
     return false;
   }
 

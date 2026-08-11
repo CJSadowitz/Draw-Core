@@ -1,5 +1,6 @@
 #include "Deck.hpp"
 #include <optional>
+#include <spdlog/spdlog.h>
 
 namespace game {
   Deck::Deck(std::vector<Card> cards, unsigned int seed) {
@@ -27,6 +28,7 @@ namespace game {
 
   std::optional<std::vector<Card>> Deck::DrawCards() { 
     if (this->mDrawPile.size() == 0 && this->mDiscardPile.size() == 0) {
+      spdlog::warn("[Deck] [DrawCards] Empty draw and discard piles");
       return std::nullopt;
     }
 
@@ -41,6 +43,7 @@ namespace game {
     bool isWildCard  = card.type == CardType::WILD;
     while (!isSameType && !isSameValue && !isWildCard) {
       if (i == 0) {
+        spdlog::info("[Deck] [DrawCards] Reached end of draw pile");
         return std::nullopt;
       }
       drawnCards.emplace_back(card);
@@ -58,6 +61,7 @@ namespace game {
 
   std::optional<Card> Deck::DrawCard() {
     if (this->mDrawPile.size() == 0) {
+      spdlog::info("[Deck] [DrawCard] Reached end of draw pile");
       return std::nullopt;
     }
     auto card = this->mDrawPile.back();
@@ -66,8 +70,8 @@ namespace game {
   }
 
   bool Deck::ResetDiscardPile() {
-    // No cards to reset
     if (this->mDiscardPile.size() == 1) {
+      spdlog::info("[Deck] [ResetDiscardPile] No cards to reset");
       return false;
     }
     // Deck initialization -> add a single card to play off of
@@ -78,6 +82,7 @@ namespace game {
     }
 
     if (this->mDiscardPile.size() == 0 && this->mDrawPile.size() == 0) {
+      spdlog::info("[Deck] [ResetDiscardPile] Empty draw and discard piles");
       return false;
     }
     // Last element in the array is what player act on; thus everything else should stay
@@ -93,6 +98,7 @@ namespace game {
 
   bool Deck::AddCards(std::vector<Card>& cards) {
     if (cards.size() == 0) {
+      spdlog::warn("[Deck] [AddCards] No cards to add");
       return false;
     }
     for (const auto& card : cards) {
@@ -113,12 +119,14 @@ namespace game {
 
   bool Deck::IsLegalCard(Card card) {
     if (this->mDiscardPile.size() == 0) {
+      spdlog::info("[Deck] [IsLegalCard] Empty discard pile");
       return false;
     }
     auto topCard = this->mDiscardPile.back();
     if (card.type == topCard.type || card.value == topCard.value || card.type == game::CardType::WILD) {
       return true;
     }
+    spdlog::info("[Deck] [IsLegalCard] {}, {} does not match {}, {}", (int)card.value, (int)card.type, (int)topCard.value, (int)topCard.type);
     return false;
   }
 
