@@ -33,9 +33,6 @@ namespace game {
   };
   class DrawCore {
     public:
-      /**
-       * @brief
-       */
       DrawCore(unsigned int seed, size_t playerCount, std::vector<Card> cards = std::vector<Card>());
 
       /**
@@ -86,6 +83,9 @@ namespace game {
       }
 
     private:
+
+      void PlayCardAffects(Card card);
+
       /**
        * @brief helper function for MakeMove: gets the drawn cards and adds it to player hand
        *

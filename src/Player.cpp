@@ -6,6 +6,7 @@ namespace game {
   Player::Player(std::vector<Card> cards, int id) {
     this->mId = id;
     this->AddCards(cards);
+    this->mState = turn::State::INACTIVE;
   }
 
   bool Player::AddCards(std::vector<Card> cards) {

@@ -53,6 +53,8 @@ namespace game {
         }
         this->PlayCard(playerMove.card.value());
         this->UpdateTurn(playerMove.card.value());
+        this->PlayCardAffects(playerMove.card.value());
+        // Check if player won (assuming not played wild need to check individually there)
         break;
       case (MoveType::DRAW):
         if (!this->PlayDraw()) {
@@ -167,7 +169,41 @@ namespace game {
     else if (playedCard.value == CardValue::SKIP) {
       this->UpdateTurn(turn::TurnType::SKIP);
     }
+    else if (playedCard.value == CardValue::PLUS_TWO) {
+      this->UpdateTurn(turn::TurnType::DEFAULT);
+    }
     else {
+      this->UpdateTurn(turn::TurnType::DEFAULT);
+    }
+  }
+
+  void DrawCore::PlayCardAffects(Card playedCard) {
+    if (playedCard.value == CardValue::PLUS_TWO) {
+      auto card1 = this->GetDeck().DrawCard();
+      auto card2 = this->GetDeck().DrawCard();
+      auto player = this->GetActivePlayer().value();
+      if (card1 && card2) {
+        player.AddCard(card1.value());
+        player.AddCard(card2.value());
+        auto activeIt = std::find(this->mPlayers.begin(), this->mPlayers.end(), player);
+        int activeIndex = std::distance(this->mPlayers.begin(), activeIt);
+        this->mPlayers[activeIndex] = player;
+      }
+      this->UpdateTurn(turn::TurnType::DEFAULT);
+    }
+    if (playedCard.type == CardType::WILD && playedCard.value == CardValue::CHANGE_COLOR_PLUS_FOUR) {
+      auto card1 = this->GetDeck().DrawCard();
+      auto card2 = this->GetDeck().DrawCard();
+      auto card3 = this->GetDeck().DrawCard();
+      auto card4 = this->GetDeck().DrawCard();
+      auto player = this->GetActivePlayer().value();
+      if (card1 && card2 && card3 && card4) {
+        player.AddCard(card1.value());
+        player.AddCard(card2.value());
+        auto activeIt = std::find(this->mPlayers.begin(), this->mPlayers.end(), player);
+        int activeIndex = std::distance(this->mPlayers.begin(), activeIt);
+        this->mPlayers[activeIndex] = player;
+      }
       this->UpdateTurn(turn::TurnType::DEFAULT);
     }
   }

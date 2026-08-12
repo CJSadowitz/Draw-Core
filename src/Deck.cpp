@@ -126,6 +126,18 @@ namespace game {
     if (card.type == topCard.type || card.value == topCard.value || card.type == game::CardType::WILD) {
       return true;
     }
+    if (card.type == CardType::RED    && topCard.value == CardValue::CHANGE_COLOR_RED) {
+      return true;
+    }
+    if (card.type == CardType::GREEN  && topCard.value == CardValue::CHANGE_COLOR_GREEN) {
+      return true;
+    }
+    if (card.type == CardType::BLUE   && topCard.value == CardValue::CHANGE_COLOR_BLUE) {
+      return true;
+    }
+    if (card.type == CardType::YELLOW && topCard.value == CardValue::CHANGE_COLOR_YELLOW) {
+      return true;
+    }
     spdlog::info("[Deck] [IsLegalCard] {}, {} does not match {}, {}", (int)card.value, (int)card.type, (int)topCard.value, (int)topCard.type);
     return false;
   }
