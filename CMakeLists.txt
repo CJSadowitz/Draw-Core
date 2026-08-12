@@ -20,6 +20,14 @@ FetchContent_Declare(
 
 FetchContent_MakeAvailable(Catch2)
 
+FetchContent_Declare(spdlog
+    GIT_REPOSITORY https://github.com/gabime/spdlog.git
+    GIT_TAG        v1.14.1
+)
+FetchContent_MakeAvailable(spdlog)
+
+target_link_libraries(DrawEngine spdlog::spdlog)
+
 # Attach the built unittesting library and generate test cases
 if(BUILD_TESTS)
   add_subdirectory(tests)
@@ -34,7 +42,7 @@ target_include_directories(DrawEngine
 )
 
 install(
-  TARGETS DrawEngine
+  TARGETS DrawEngine spdlog
   EXPORT DrawEngine
   ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
   LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
