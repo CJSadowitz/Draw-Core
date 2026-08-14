@@ -160,16 +160,16 @@ namespace game {
   }
 
   void DrawCore::UpdateTurn(Card playedCard) {
-    if (playedCard.type == CardType::WILD) {
+    if (playedCard.GetType() == CardType::WILD) {
 
     }
-    else if (playedCard.value == CardValue::REVERSE) {
+    else if (playedCard.GetValue() == CardValue::REVERSE) {
       this->UpdateTurn(turn::TurnType::REVERSE);
     }
-    else if (playedCard.value == CardValue::SKIP) {
+    else if (playedCard.GetValue() == CardValue::SKIP) {
       this->UpdateTurn(turn::TurnType::SKIP);
     }
-    else if (playedCard.value == CardValue::PLUS_TWO) {
+    else if (playedCard.GetValue() == CardValue::PLUS_TWO) {
       this->UpdateTurn(turn::TurnType::DEFAULT);
     }
     else {
@@ -178,7 +178,7 @@ namespace game {
   }
 
   void DrawCore::PlayCardAffects(Card playedCard) {
-    if (playedCard.value == CardValue::PLUS_TWO) {
+    if (playedCard.GetValue() == CardValue::PLUS_TWO) {
       auto card1 = this->GetDeck().DrawCard();
       auto card2 = this->GetDeck().DrawCard();
       auto player = this->GetActivePlayer().value();
@@ -191,7 +191,7 @@ namespace game {
       }
       this->UpdateTurn(turn::TurnType::DEFAULT);
     }
-    if (playedCard.type == CardType::WILD && playedCard.value == CardValue::CHANGE_COLOR_PLUS_FOUR) {
+    if (playedCard.GetType() == CardType::WILD && playedCard.GetValue() == CardValue::CHANGE_COLOR_PLUS_FOUR) {
       auto card1 = this->GetDeck().DrawCard();
       auto card2 = this->GetDeck().DrawCard();
       auto card3 = this->GetDeck().DrawCard();
