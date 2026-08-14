@@ -6,15 +6,6 @@
 #include <optional>
 
 namespace game {
-  namespace turn {
-    enum State {
-      ACTIVE,
-      INACTIVE,
-      CHANGE_COLOR,
-      PLAYDRAW,
-      PLAYSTACK
-    };
-  }
   class Player {
     public:
       Player(std::vector<Card> cards, int id);
@@ -60,17 +51,6 @@ namespace game {
        */
       bool HasCard(Card card);
 
-      /**
-       *
-       */
-      void SetState(turn::State state) {
-        this->mState = state;
-      }
-
-      turn::State GetState() {
-        return this->mState;
-      }
-
       int GetId() {
         return this->mId;
       }
@@ -81,9 +61,7 @@ namespace game {
 
     private:
       int mId;
-      turn::State mState;
       std::vector<Card> mCards;
-      // How can I not hardcode the han to have certain card types?
       std::vector<Card> mRedCards;
       std::vector<Card> mGreenCards;
       std::vector<Card> mBlueCards;

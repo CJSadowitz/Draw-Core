@@ -6,7 +6,6 @@ namespace game {
   Player::Player(std::vector<Card> cards, int id) {
     this->mId = id;
     this->AddCards(cards);
-    this->mState = turn::State::INACTIVE;
   }
 
   bool Player::AddCards(std::vector<Card> cards) {
@@ -21,7 +20,7 @@ namespace game {
 
   std::optional<Card> Player::PlayCard(Card pCard) {
     std::optional<Card> card = std::nullopt;
-    spdlog::info("[Player] [PlayCard] {} played: {}, {}", this->mId, (int)pCard.GetType(), (int)pCard.GetValue());
+    spdlog::info("[Player] [PlayCard] {} played: {}", this->mId, pCard.Print());
     switch (pCard.GetType()) {
       case(CardType::RED):
         if (this->mRedCards.size() > 0) {
@@ -140,4 +139,3 @@ namespace game {
   }
 
 };
-
