@@ -4,29 +4,21 @@ project(DrawEngine VERSION 1.0.0 LANGUAGES CXX)
 add_library(DrawEngine STATIC)
 include(GNUInstallDirs)
 
+include(${CMAKE_CURRENT_SOURCE_DIR}/scripts/cmake/utils.cmake)
+
 # User provided build options
 option(BUILD_TESTS "Build tests" OFF)
+option(BUILD_THIRD_PARTY_LIBS "Build libs" OFF)
 
-# Run the cmake file inside of the third_party directory
-Include(FetchContent)
+set(DRAW_LIBS "${CMAKE_CURRENT_SOURCE_DIR}/libs")
+Set(THIRD_PARTY_SRC "${CMAKE_SOURCE_DIR}/third_party")
 
-set(FETCHCONTENT_BASE_DIR "${CMAKE_SOURCE_DIR}/third_party")
-
-FetchContent_Declare(
-  Catch2
-  GIT_REPOSITORY https://github.com/catchorg/Catch2.git
-  GIT_TAG        v3.8.1 # or a later release
-)
-
-FetchContent_MakeAvailable(Catch2)
-
-FetchContent_Declare(spdlog
-    GIT_REPOSITORY https://github.com/gabime/spdlog.git
-    GIT_TAG        v1.14.1
-)
-FetchContent_MakeAvailable(spdlog)
-
-target_link_libraries(DrawEngine spdlog::spdlog)
+set(FETCHCONTENT_BASE_DIR ${THIRD_PARTY_SRC})
+if(BUILD_THIRD_PARTY_LIBS)
+  build_third_party_libs()
+  install_third_party_libs("${DRAW_LIBS}/include")
+endif()
+set_cmake_prefix_path()
 
 # Attach the built unittesting library and generate test cases
 if(BUILD_TESTS)
@@ -35,14 +27,8 @@ endif()
 
 add_subdirectory(src)
 
-target_include_directories(DrawEngine
-  PUBLIC
-    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-    $<INSTALL_INTERFACE:include>
-)
-
 install(
-  TARGETS DrawEngine spdlog
+  TARGETS DrawEngine
   EXPORT DrawEngine
   ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
   LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
