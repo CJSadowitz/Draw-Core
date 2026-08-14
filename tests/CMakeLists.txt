@@ -1,3 +1,5 @@
+find_package(Catch2 REQUIRED)
+
 file(GLOB TEST_SOURCE "${CMAKE_CURRENT_SOURCE_DIR}/*.cpp")
 
 add_executable(test_runner ${TEST_SOURCE})
