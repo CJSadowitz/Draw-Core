@@ -21,8 +21,8 @@ namespace game {
 
   std::optional<Card> Player::PlayCard(Card pCard) {
     std::optional<Card> card = std::nullopt;
-    spdlog::info("[Player] [PlayCard] {} played: {}, {}", this->mId, (int)pCard.type, (int)pCard.value);
-    switch (pCard.type) {
+    spdlog::info("[Player] [PlayCard] {} played: {}, {}", this->mId, (int)pCard.GetType(), (int)pCard.GetValue());
+    switch (pCard.GetType()) {
       case(CardType::RED):
         if (this->mRedCards.size() > 0) {
           card = this->mRedCards.back();
@@ -106,7 +106,7 @@ namespace game {
   }
 
   void Player::AddCard(Card card) {
-    switch(card.type) {
+    switch(card.GetType()) {
       case(CardType::RED):
         this->mRedCards.emplace_back(card);
         break;
@@ -127,15 +127,15 @@ namespace game {
   }
 
   bool Player::HasCard(Card card) {
-    auto cards = this->GetCards(card.type);
+    auto cards = this->GetCards(card.GetType());
     if (!cards) {
       return false;
     }
     auto topCard = cards.value().back();
-    if (topCard.value == card.value && topCard.type == card.type) {
+    if (topCard == card) {
       return true;
     }
-    spdlog::warn("[Player] [HasCard] Id: {}: {}, {} does not match {}, {}", (int)this->mId, (int)card.value, (int)card.type, (int)topCard.value, (int)topCard.type);
+    spdlog::warn("[Player] [HasCard] Id: {}: {}, does not match {}", (int)this->mId, card.Print(), topCard.Print());
     return false;
   }
 

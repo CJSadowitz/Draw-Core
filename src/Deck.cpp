@@ -38,10 +38,8 @@ namespace game {
     int i = this->mDrawPile.size() - 1;
     auto card = this->mDrawPile[i];
     this->mDrawPile.pop_back();
-    bool isSameType  = card.type == topCard.type;
-    bool isSameValue = card.value == topCard.value;
-    bool isWildCard  = card.type == CardType::WILD;
-    while (!isSameType && !isSameValue && !isWildCard) {
+    bool isWildCard  = card.GetType() == CardType::WILD;
+    while ((card != topCard) && !isWildCard) {
       if (i == 0) {
         spdlog::info("[Deck] [DrawCards] Reached end of draw pile");
         return std::nullopt;
@@ -49,9 +47,7 @@ namespace game {
       drawnCards.emplace_back(card);
       i--;
       card = this->mDrawPile[i];
-      isSameValue = card.value == topCard.value;
-      isSameType = card.type == topCard.type;
-      isWildCard  = card.type == CardType::WILD;
+      isWildCard  = card.GetType() == CardType::WILD;
       this->mDrawPile.pop_back();
     }
 
@@ -123,22 +119,10 @@ namespace game {
       return false;
     }
     auto topCard = this->mDiscardPile.back();
-    if (card.type == topCard.type || card.value == topCard.value || card.type == game::CardType::WILD) {
+    if (card.GetType() == topCard.GetType() || card.GetValue() == topCard.GetValue() || card.GetType() == game::CardType::WILD) {
       return true;
     }
-    if (card.type == CardType::RED    && topCard.value == CardValue::CHANGE_COLOR_RED) {
-      return true;
-    }
-    if (card.type == CardType::GREEN  && topCard.value == CardValue::CHANGE_COLOR_GREEN) {
-      return true;
-    }
-    if (card.type == CardType::BLUE   && topCard.value == CardValue::CHANGE_COLOR_BLUE) {
-      return true;
-    }
-    if (card.type == CardType::YELLOW && topCard.value == CardValue::CHANGE_COLOR_YELLOW) {
-      return true;
-    }
-    spdlog::info("[Deck] [IsLegalCard] {}, {} does not match {}, {}", (int)card.value, (int)card.type, (int)topCard.value, (int)topCard.type);
+    spdlog::warn("[Deck] [IsLegalCard] {} is not playable on {}", card.Print(), topCard.Print());
     return false;
   }
 

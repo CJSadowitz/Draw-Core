@@ -60,8 +60,8 @@ namespace game {
         }
       }
 
-      void Print() {
-        spdlog::info("[Card] [Print] {} {}", magic_enum::enum_name(this->type), magic_enum::enum_name(this->value));
+      std::string Print() {
+        return (std::string)magic_enum::enum_name(this->type) + ' '  + (std::string)magic_enum::enum_name(this->value);
       }
 
       void Reset() {
@@ -78,6 +78,10 @@ namespace game {
 
       bool operator==(const Card& other) {
         return (this->type == other.GetType() && this->value == other.GetValue());
+      }
+
+      bool operator!=(const Card& other) {
+        return (this->type != other.GetType() || this->value != other.GetValue());
       }
 
     private:
