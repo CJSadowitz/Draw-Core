@@ -26,9 +26,8 @@ namespace game {
        * @brief On card played, resign or loss, add cards to end of draw pile and shuffle
        *
        * @param cards  takes an array of cards to add
-       * @param amount any number of cards greater than or equal to 1
        */
-      bool AddCards(std::vector<Card> cards);
+      void AddCards(std::vector<Card> cards);
 
       /**
        * @brief Adds played card to the top of the discard pile

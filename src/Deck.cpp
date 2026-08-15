@@ -22,16 +22,10 @@ namespace game {
     return drawnCards;
   }
 
-  bool Deck::AddCards(std::vector<Card> cards) {
-    if (cards.size() == 0) {
-      spdlog::warn("[Deck] [AddCards] No cards to add");
-      return false;
-    }
+  void Deck::AddCards(std::vector<Card> cards) {
     for (const auto& card : cards) {
       this->mCards.emplace_back(card);
     }
-
-    return true;
   }
 
   std::optional<Card> Deck::PlayCard(Card card) {
