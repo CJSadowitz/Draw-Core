@@ -8,13 +8,13 @@ namespace game {
   }
 
   std::optional<std::vector<Card>> Deck::DrawCards(int count) { 
-    if (this->mCards.size() == 0) {
+    if (this->mCards.size() == 0 || count == 0) {
       spdlog::warn("[Deck] [DrawCards] No Cards");
       return std::nullopt;
     }
 
     std::vector<Card> drawnCards = std::vector<Card>();
-    for (int i = this->mCards.size() - 1 ; i < count; i--) {
+    for (int i = 0 ; i < count; i++) {
       auto card = this->mCards.back();
       drawnCards.emplace_back(card);
       this->mCards.pop_back();
