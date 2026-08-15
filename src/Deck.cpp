@@ -3,127 +3,43 @@
 #include <spdlog/spdlog.h>
 
 namespace game {
-  Deck::Deck(std::vector<Card> cards, unsigned int seed) {
-    // May have to move this to Engine class
-    this->mSeed.seed(seed);
-
-    this->mDrawPile = cards;
+  Deck::Deck(std::vector<Card> cards) {
+    this->mCards = cards;
   }
 
-  void Deck::ShuffleCards() {
-    auto shuffledCards = std::vector<Card>();
-
-    unsigned int totalCards = this->mDrawPile.size();
-    unsigned int remainingCards = this->mDrawPile.size();
-    while (remainingCards != 0) {
-      std::uniform_int_distribution<int> distr(0, remainingCards - 1);
-      int index = distr(this->mSeed);
-      shuffledCards.emplace_back(this->mDrawPile[index]);
-      this->mDrawPile[index] = this->mDrawPile[remainingCards - 1];
-      remainingCards--;
-    }
-
-    this->mDrawPile = shuffledCards;
-  }
-
-  std::optional<std::vector<Card>> Deck::DrawCards() { 
-    if (this->mDrawPile.size() == 0 && this->mDiscardPile.size() == 0) {
-      spdlog::warn("[Deck] [DrawCards] Empty draw and discard piles");
+  std::optional<std::vector<Card>> Deck::DrawCards(int count) { 
+    if (this->mCards.size() == 0 || count == 0) {
+      spdlog::warn("[Deck] [DrawCards] No Cards");
       return std::nullopt;
     }
 
     std::vector<Card> drawnCards = std::vector<Card>();
-    auto topCard = this->mDiscardPile[this->mDiscardPile.size() - 1];
-
-    int i = this->mDrawPile.size() - 1;
-    auto card = this->mDrawPile[i];
-    this->mDrawPile.pop_back();
-    bool isWildCard  = card.GetType() == CardType::WILD;
-    while ((card != topCard) && !isWildCard) {
-      if (i == 0) {
-        spdlog::info("[Deck] [DrawCards] Reached end of draw pile");
-        return std::nullopt;
-      }
+    for (int i = 0 ; i < count; i++) {
+      auto card = this->mCards.back();
       drawnCards.emplace_back(card);
-      i--;
-      card = this->mDrawPile[i];
-      isWildCard  = card.GetType() == CardType::WILD;
-      this->mDrawPile.pop_back();
+      this->mCards.pop_back();
     }
-
-    drawnCards.emplace_back(card);
     return drawnCards;
   }
 
-  std::optional<Card> Deck::DrawCard() {
-    if (this->mDrawPile.size() == 0) {
-      spdlog::info("[Deck] [DrawCard] Reached end of draw pile");
+  void Deck::AddCards(std::vector<Card> cards) {
+    for (const auto& card : cards) {
+      this->mCards.emplace_back(card);
+    }
+  }
+
+  std::optional<Card> Deck::PlayCard(Card card) {
+    if (!this->HasCard(card)) {
       return std::nullopt;
     }
-    auto card = this->mDrawPile.back();
-    this->mDrawPile.pop_back();
+    this->mCards.pop_back();
     return card;
   }
 
-  bool Deck::ResetDiscardPile() {
-    if (this->mDiscardPile.size() == 1) {
-      spdlog::info("[Deck] [ResetDiscardPile] No cards to reset");
+  bool Deck::HasCard(Card card) {
+    if (this->mCards.size() == 0) {
       return false;
     }
-    // Deck initialization -> add a single card to play off of
-    if (this->mDiscardPile.size() == 0 && this->mDrawPile.size() > 0) {
-      this->mDiscardPile.emplace_back(this->mDrawPile[this->mDrawPile.size() - 1]);
-      this->mDrawPile.pop_back();
-      return true;
-    }
-
-    if (this->mDiscardPile.size() == 0 && this->mDrawPile.size() == 0) {
-      spdlog::info("[Deck] [ResetDiscardPile] Empty draw and discard piles");
-      return false;
-    }
-    // Last element in the array is what player act on; thus everything else should stay
-    auto newDiscardPile = std::vector<Card>();
-    newDiscardPile.emplace_back(this->mDiscardPile[this->mDiscardPile.size() - 1]);
-
-    for (int i = 0; i < this->mDiscardPile.size() - 1; i++) {
-      this->mDrawPile.emplace_back(this->mDiscardPile[i]);
-    }
-    this->ShuffleCards();
-    return true;
+    return this->mCards.back() == card;
   }
-
-  bool Deck::AddCards(std::vector<Card>& cards) {
-    if (cards.size() == 0) {
-      spdlog::warn("[Deck] [AddCards] No cards to add");
-      return false;
-    }
-    for (const auto& card : cards) {
-      this->mDrawPile.emplace_back(card);
-    }
-    this->ShuffleCards();
-    cards.clear();
-    return true;
-  }
-
-  bool Deck::PlayCard(game::Card card) {
-    if (!IsLegalCard(card)) {
-      return false;
-    }
-    this->mDiscardPile.emplace_back(card);
-    return true;
-  }
-
-  bool Deck::IsLegalCard(Card card) {
-    if (this->mDiscardPile.size() == 0) {
-      spdlog::info("[Deck] [IsLegalCard] Empty discard pile");
-      return false;
-    }
-    auto topCard = this->mDiscardPile.back();
-    if (card.GetType() == topCard.GetType() || card.GetValue() == topCard.GetValue() || card.GetType() == game::CardType::WILD) {
-      return true;
-    }
-    spdlog::warn("[Deck] [IsLegalCard] {} is not playable on {}", card.Print(), topCard.Print());
-    return false;
-  }
-
 };

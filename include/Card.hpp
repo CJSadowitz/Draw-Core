@@ -1,8 +1,8 @@
 #ifndef CARD_HPP
 #define CARD_HPP
 
-#include <magic_enum/magic_enum.hpp>
 #include <spdlog/spdlog.h>
+#include <magic_enum/magic_enum.hpp>
 
 namespace game {
   enum class CardType {
