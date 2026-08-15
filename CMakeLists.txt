@@ -28,7 +28,7 @@ endif()
 add_subdirectory(src)
 
 install(
-  TARGETS DrawEngine
+  TARGETS DrawEngine spdlog magic_enum
   EXPORT DrawEngine
   ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
   LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
