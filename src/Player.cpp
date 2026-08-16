@@ -44,6 +44,7 @@ namespace game {
       case(CardType::WILD):
         return this->mWildCards.PlayCard(pCard);
     }
+    return std::nullopt;
   }
 
   Deck Player::GetCards(CardType type) {
@@ -59,6 +60,7 @@ namespace game {
       case(CardType::WILD):
         return this->mWildCards;
     }
+    return Deck();
   }
 
   void Player::AddCards(Card card) {
@@ -69,6 +71,9 @@ namespace game {
 
   bool Player::HasCard(Card card) {
     auto cards = this->GetCards(card.GetType()).GetCards();
+    if (cards.size() == 0) {
+      return false;
+    }
     auto topCard = cards.back();
     if (topCard == card) {
       return true;

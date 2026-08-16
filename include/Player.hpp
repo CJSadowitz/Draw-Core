@@ -14,7 +14,6 @@ namespace game {
        * @brief After a draw move, cards need to be added to hand
        *
        * @param cards The vector of cards from 1-n, 0 returns false
-       * @return bool of success
        */
       void AddCards(std::vector<Card> cards);
       void AddCards(Card card);
