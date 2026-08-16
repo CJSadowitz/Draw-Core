@@ -28,6 +28,8 @@ namespace game {
     }
   }
 
+  void Deck::AddCards(Card card) { this->mCards.emplace_back(card); }
+
   std::optional<Card> Deck::PlayCard(Card card) {
     if (!this->HasCard(card)) {
       return std::nullopt;
