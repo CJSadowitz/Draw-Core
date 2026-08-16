@@ -13,7 +13,7 @@ namespace game {
        *
        * @param cards vector to the cards
        */
-      Deck(std::vector<Card> cards);
+      Deck(std::vector<Card> cards = std::vector<Card>());
 
       /**
        * @brief Returns all drawn cards until value or type matches top discard
@@ -28,6 +28,7 @@ namespace game {
        * @param cards  takes an array of cards to add
        */
       void AddCards(std::vector<Card> cards);
+      void AddCards(Card card);
 
       /**
        * @brief Adds played card to the top of the discard pile

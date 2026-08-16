@@ -3,134 +3,78 @@
 #include <spdlog/spdlog.h>
 
 namespace game {
-  Player::Player(std::vector<Card> cards, int id) {
+  Player::Player(Deck cards, int id) {
     this->mId = id;
-    this->AddCards(cards);
+    this->AddCards(cards.GetCards());
   }
 
-  bool Player::AddCards(std::vector<Card> cards) {
-    if (cards.size() == 0) {
-      return false;
-    }
+  void Player::AddCards(std::vector<Card> cards) {
     for (auto card : cards) {
-      this->AddCard(card);
+      switch(card.GetType()) {
+        case(CardType::RED):
+          this->mRedCards.AddCards(card);
+          continue;
+        case(CardType::GREEN):
+          this->mGreenCards.AddCards(card);
+          continue;
+        case(CardType::BLUE):
+          this->mBlueCards.AddCards(card);
+          continue;
+        case(CardType::YELLOW):
+          this->mYellowCards.AddCards(card);
+          continue;
+        case(CardType::WILD):
+          this->mWildCards.AddCards(card);
+          continue;
+      }
     }
-    return true;
   }
 
   std::optional<Card> Player::PlayCard(Card pCard) {
-    std::optional<Card> card = std::nullopt;
     spdlog::info("[Player] [PlayCard] {} played: {}", this->mId, pCard.Print());
     switch (pCard.GetType()) {
       case(CardType::RED):
-        if (this->mRedCards.size() > 0) {
-          card = this->mRedCards.back();
-          this->mRedCards.pop_back();
-        }
-        break;
+        return this->mRedCards.PlayCard(pCard);
       case(CardType::GREEN):
-        if (this->mGreenCards.size() > 0) {
-          card = mGreenCards.back();
-          this->mGreenCards.pop_back();
-        }
-        break;
+        return this->mGreenCards.PlayCard(pCard);
       case(CardType::BLUE):
-        if (this->mBlueCards.size() > 0) {
-          card = this->mBlueCards.back();
-          this->mBlueCards.pop_back();
-        }
-        break;
+        return this->mBlueCards.PlayCard(pCard);
       case(CardType::YELLOW):
-        if (this->mYellowCards.size() > 0) {
-          card = this->mYellowCards.back();
-          this->mYellowCards.pop_back();
-        }
-        break;
+        return this->mYellowCards.PlayCard(pCard);
       case(CardType::WILD):
-        if (this->mWildCards.size() > 0) {
-          card = this->mWildCards.back();
-          this->mWildCards.pop_back();
-        }
-        break;
+        return this->mWildCards.PlayCard(pCard);
     }
-    // Reconstruct mCards cannot remove single instance due to index being unknown and possible duplicates
-    if (card != std::nullopt) {
-      this->mCards = std::vector<Card>();
-      // Has to be a better way to do this
-      for (auto rCard : this->mRedCards)    { this->mCards.emplace_back(rCard); }
-      for (auto gCard : this->mGreenCards)  { this->mCards.emplace_back(gCard); }
-      for (auto bCard : this->mBlueCards)   { this->mCards.emplace_back(bCard); }
-      for (auto yCard : this->mYellowCards) { this->mCards.emplace_back(yCard); }
-      for (auto wCard : this->mWildCards)   { this->mCards.emplace_back(wCard); }
-    }
-    return card;
+    return std::nullopt;
   }
 
-  std::optional<std::vector<Card>> Player::GetCards(CardType type) {
+  Deck Player::GetCards(CardType type) {
     switch(type) {
       case(CardType::RED):
-        if (this->mRedCards.size() > 0) {
-          return this->mRedCards;
-        }
-        break;
+        return this->mRedCards;
       case(CardType::GREEN):
-        if (this->mGreenCards.size() > 0) {
-          return this->mGreenCards;
-        }
-        break;
+        return this->mGreenCards;
       case(CardType::BLUE):
-        if (this->mBlueCards.size() > 0) {
-          return this->mBlueCards;
-        }
-        break;
+        return this->mBlueCards;
       case(CardType::YELLOW):
-        if (this->mYellowCards.size() > 0) {
-          return this->mYellowCards;
-        }
-        break;
+        return this->mYellowCards;
       case(CardType::WILD):
-        if (this->mWildCards.size() > 0) {
-          return this->mWildCards;
-        }
-        break;
+        return this->mWildCards;
     }
-    return std::nullopt;
+    return Deck();
   }
 
-  std::optional<std::vector<Card>> Player::GetCards() {
-    if (this->mCards.size() > 0) {
-      return this->mCards;
-    }
-    return std::nullopt;
-  }
-
-  void Player::AddCard(Card card) {
-    switch(card.GetType()) {
-      case(CardType::RED):
-        this->mRedCards.emplace_back(card);
-        break;
-      case(CardType::GREEN):
-        this->mGreenCards.emplace_back(card);
-        break;
-      case(CardType::BLUE):
-        this->mBlueCards.emplace_back(card);
-        break;
-      case(CardType::YELLOW):
-        this->mYellowCards.emplace_back(card);
-        break;
-      case(CardType::WILD):
-        this->mWildCards.emplace_back(card);
-        break;
-    }
-    this->mCards.emplace_back(card);
+  void Player::AddCards(Card card) {
+    auto cards = std::vector<Card>();
+    cards.emplace_back(card);
+    this->AddCards(cards);
   }
 
   bool Player::HasCard(Card card) {
-    auto cards = this->GetCards(card.GetType());
-    if (!cards) {
+    auto cards = this->GetCards(card.GetType()).GetCards();
+    if (cards.size() == 0) {
       return false;
     }
-    auto topCard = cards.value().back();
+    auto topCard = cards.back();
     if (topCard == card) {
       return true;
     }

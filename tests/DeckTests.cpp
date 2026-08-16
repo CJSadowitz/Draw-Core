@@ -1,7 +1,7 @@
 #include "Deck.hpp"
 #include <catch2/catch_test_macros.hpp>
 
-TEST_CASE("[DrawCards]") {
+TEST_CASE("[DrawCards] [Deck]") {
   std::vector<game::Card> cards = std::vector<game::Card>();
   for (int i = 0; i < 4; i++) {
       game::Card card0{static_cast<game::CardType>(i), game::CardValue::ZERO};
@@ -47,7 +47,7 @@ TEST_CASE("[DrawCards]") {
   }
 }
 
-TEST_CASE("[PlayCard]") {
+TEST_CASE("[PlayCard] [Deck]") {
   auto cards = std::vector<game::Card>();
   cards.emplace_back(game::Card{game::CardType::RED, game::CardValue::ZERO});
   cards.emplace_back(game::Card{game::CardType::RED, game::CardValue::ONE});
@@ -69,7 +69,7 @@ TEST_CASE("[PlayCard]") {
   }
 }
 
-TEST_CASE("[AddCards]") {
+TEST_CASE("[AddCards] [Deck]") {
   game::Deck deck = game::Deck(std::vector<game::Card>());
   SECTION("Single") {
     auto card = game::Card{game::CardType::RED, game::CardValue::ZERO};
@@ -93,7 +93,7 @@ TEST_CASE("[AddCards]") {
   }
 }
 
-TEST_CASE("[HasCard]") {
+TEST_CASE("[HasCard] [Deck]") {
   auto card = game::Card{game::CardType::RED, game::CardValue::ZERO};
   auto cards = std::vector<game::Card>();
   cards.emplace_back(card);
